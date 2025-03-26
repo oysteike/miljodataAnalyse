@@ -31,35 +31,6 @@ class EmissionsData:
             print(f"Feil ved henting av data: {e}")
             return None
 
-    def fetch_values(self, UtslpKomp=["K11", "K12"]):
-        """
-        Henter verdier for de spesifiserte utslippskomponentene i kronologisk rekkefølge.
-        Returnerer en dict hvor nøklene er komponenter og verdiene er lister over utslippsdata per år.
-        """
-        if not self.data:
-            print("Ingen data tilgjengelig. Kjør fetch_data() først.")
-            return None
-
-        # Organiser dataene
-        raw_data = {tuple(d["key"]): d["values"][0] for d in self.data["data"]}
-
-        # Strukturert dict: {år: {komponent: verdi}}
-        structured_data = {}
-        for (energiprodukt, komponent, år), verdi in raw_data.items():
-            if komponent not in UtslpKomp:
-                continue  # Skipp komponenter vi ikke ba om
-            if år not in structured_data:
-                structured_data[år] = {}
-            structured_data[år][komponent] = float(verdi) if verdi != '.' else None
-
-        # Sorter etter år
-        years = sorted(structured_data.keys())
-
-        # Konverter til dict av lister {komponent: [verdier per år]}
-        comp_values = {comp: [structured_data[year].get(comp, 0) for year in years] for comp in UtslpKomp}
-
-        return years, comp_values  # Returnerer både årsliste og utslippsdata per komponent
-        
 if __name__ == "__main__":
     emissions = EmissionsData()
     data = emissions.fetch_data()
