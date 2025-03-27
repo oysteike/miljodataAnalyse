@@ -12,14 +12,15 @@ save_to_csv to save the data as csv with pandas DataFrame
 run to run the whole process
 """
 class FrostDataFetcher:
-    def __init__(self, client_id, source_id, output_filename="met_data.csv"):
+    def __init__(self, client_id, source_id, elements, output_filename="met_data.csv"):
         self.client_id = client_id
         self.source_id = source_id
+        self.elements = elements
         self.output_filename = output_filename
         self.endpoint = 'https://frost.met.no/observations/v0.jsonld'
         self.parameters = {
             'sources': self.source_id,
-            'elements': 'sum(precipitation_amount P1D), sum(duration_of_precipitation P1D), sum(duration_of_sunshine P1D)',
+            'elements': elements,
             'referencetime': '2015-01-01/2025-01-01',
         }
         self.data_adjusted = []
@@ -67,5 +68,8 @@ class FrostDataFetcher:
 if __name__ == "__main__":
     client_id = "5b9e3b06-3d3d-4049-9b86-b52c0e8cfb81"
     source_id = "SN90450"
-    fetcher = FrostDataFetcher(client_id, source_id)
-    fetcher.run()
+    elements1 = 'sum(precipitation_amount P1D), sum(duration_of_precipitation P1D), sum(duration_of_sunshine P1D)'
+    elements2 = 'best_estimate_mean(air_temperature P1D)'
+    fetch1 = FrostDataFetcher(client_id, source_id, elements1)
+    fetch2 = FrostDataFetcher(client_id, source_id, elements2, output_filename="met_data2.csv")
+    fetch1.run()
