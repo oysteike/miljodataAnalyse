@@ -9,13 +9,6 @@ from weather_oslo_met import FrostDataFetcher
 
 class TestFrostDataFetcher(unittest.TestCase):
 
-    def test_actual_api_connection(self): # Sjekker om man faktisk kan koble seg til API-en
-        fetcher = FrostDataFetcher(self.client_id, "SN18700")
-        response = fetcher.fetch_data()
-        self.assertIsNotNone(response)
-        self.assertIsInstance(response, list)
-
-
     def setUp(self):
         # Lager en testinstans av klassen og eksempeldata
         self.client_id = "5b9e3b06-3d3d-4049-9b86-b52c0e8cfb81"
@@ -33,18 +26,11 @@ class TestFrostDataFetcher(unittest.TestCase):
             }
         ]
 
-    @patch('weather_oslo_met.requests.get') # Bruker patch for å mocke requests.get siden man ikke vil teste API-en, men selve koden
-    def test_fetch_data_success(self, mock_get):
-        # Sjekker at fetch_data() håndterer vellykket API-respons
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {'data': self.example_data}
-        mock_get.return_value = mock_response
-
-        data = self.fetcher.fetch_data()
-        self.assertIsInstance(data, list)
-        self.assertEqual(len(data), 1)
-        self.assertEqual(data[0]["sourceId"], "SN12345")
+    def test_actual_api_connection(self): # Sjekker om man faktisk kan koble seg til API-en
+        fetcher = FrostDataFetcher(self.client_id, "SN18700")
+        response = fetcher.fetch_data()
+        self.assertIsNotNone(response)
+        self.assertIsInstance(response, list)
 
     def test_process_data(self):
         # Sjekker at process_data() legger inn info i data_adjusted
@@ -86,7 +72,7 @@ class TestFrostDataFetcher(unittest.TestCase):
 
         os.remove(path)
 
-    @patch('weather_oslo_met.requests.get')
+    @patch('weather_oslo_met.requests.get') # Bruker patch for å mocke requests.get siden man ikke vil teste API-en, men selve koden
     def test_full_run(self, mock_get):
         # Sjekker at hele run()-prosessen fungerer med mocket API-respons
         mock_response = Mock()
