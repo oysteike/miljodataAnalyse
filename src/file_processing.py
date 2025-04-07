@@ -88,4 +88,45 @@ def csv_reader(filename, datatyper):
     return result
 
     
-#print(csv_reader('/Users/kristiansolberg1/Library/CloudStorage/OneDrive-NTNU/Anvendt programmering/Mappeprosjekt/miljodataAnalyse-1/data/met_data.csv', 'sum(precipitation_amount P1D)'))
+def calculate_mean(data, start_time, end_time):
+    """
+    Beregner gjennomsnittlig verdi for en spesifisert datatype innenfor et tidsintervall.
+    Args:
+        data (dict): Dataordbok som inneholder målinger.
+        start_time (str): Starttidspunkt i 'YYYY-MM-DD' format.
+        end_time (str): Sluttidspunkt i 'YYYY-MM-DD' format.
+    Returns:
+        float: Gjennomsnittsverdien for den spesifiserte datatype innenfor tidsintervallet.
+    """
+    # Konverter start- og sluttidspunkt til datetime
+    start_time = pd.to_datetime(start_time).tz_localize('UTC')
+    end_time = pd.to_datetime(end_time).tz_localize('UTC')
+    
+    # Filtrer data innenfor tidsintervallet
+    filtered_data = {k: v for k, v in data.items() if start_time <= pd.to_datetime(k) <= end_time}
+    
+
+    if not filtered_data:
+        return None
+    
+    # Samle alle verdier for den spesifiserte datatype
+    values = []
+    for element_data in filtered_data.values():
+        for measurement in element_data.values():
+            if type(measurement['value']) == type(np.float64(0)):
+                values.append(measurement['value'])
+                
+                try:
+                    values.extend(ast.literal_eval(measurement['value']))
+                except (ValueError, SyntaxError):
+                    # Hvis det ikke er en liste, ignorer
+                    continue
+
+
+    
+    if not values:
+        return None
+    
+    # Beregn gjennomsnitt
+    return np.mean(values)
+
