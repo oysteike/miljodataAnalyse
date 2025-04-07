@@ -87,16 +87,15 @@ def csv_reader(filename, datatyper):
     
     return result
 
-    
-def calculate_mean(data, start_time, end_time):
+def get_values(data, start_time='2015-01-01', end_time='2025-01-01'):
     """
-    Beregner gjennomsnittlig verdi for en spesifisert datatype innenfor et tidsintervall.
+    Henter verdier for en spesifisert datatype innenfor et tidsintervall.
     Args:
-        data (dict): Dataordbok som inneholder målinger.
+        data (dict): Data som inneholder målinger.
         start_time (str): Starttidspunkt i 'YYYY-MM-DD' format.
         end_time (str): Sluttidspunkt i 'YYYY-MM-DD' format.
     Returns:
-        float: Gjennomsnittsverdien for den spesifiserte datatype innenfor tidsintervallet.
+        list: Liste med verdier for den spesifiserte datatype innenfor tidsintervallet.
     """
     # Konverter start- og sluttidspunkt til datetime
     start_time = pd.to_datetime(start_time).tz_localize('UTC')
@@ -105,9 +104,8 @@ def calculate_mean(data, start_time, end_time):
     # Filtrer data innenfor tidsintervallet
     filtered_data = {k: v for k, v in data.items() if start_time <= pd.to_datetime(k) <= end_time}
     
-
     if not filtered_data:
-        return None
+        return []
     
     # Samle alle verdier for den spesifiserte datatype
     values = []
@@ -121,12 +119,33 @@ def calculate_mean(data, start_time, end_time):
                 except (ValueError, SyntaxError):
                     # Hvis det ikke er en liste, ignorer
                     continue
-
-
     
-    if not values:
-        return None
+    return values
+
+def calculate_mean(data, start_time, end_time):
+    """
+    Beregner gjennomsnittet av verdier for en spesifisert datatype innenfor et tidsintervall.
+    Args:
+        data (dict): Data som inneholder målinger.
+        start_time (str): Starttidspunkt i 'YYYY-MM-DD' format.
+        end_time (str): Sluttidspunkt i 'YYYY-MM-DD' format.
+    Returns:
+        float: Gjennomsnittet av verdiene innenfor tidsintervallet.
+    """
+    values = get_values(data, start_time, end_time)
     
-    # Beregn gjennomsnitt
     return np.mean(values)
 
+def calculate_median(data, start_time, end_time):
+    """
+    Beregner medianen av verdier for en spesifisert datatype innenfor et tidsintervall.
+    Args:
+        data (dict): Data som inneholder målinger.
+        start_time (str): Starttidspunkt i 'YYYY-MM-DD' format.
+        end_time (str): Sluttidspunkt i 'YYYY-MM-DD' format.
+    Returns:
+        float: Medianen av verdiene innenfor tidsintervallet.
+    """
+    values = get_values(data, start_time, end_time)
+    
+    return np.median(values)
