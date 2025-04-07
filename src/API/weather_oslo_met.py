@@ -79,6 +79,9 @@ if __name__ == "__main__":
     client_id = "5b9e3b06-3d3d-4049-9b86-b52c0e8cfb81"
     source_id = "SN90450"
 
-    fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D), sum(duration_of_sunshine P1D)',  '2015-01-01/2025-01-01')
-    fetch2 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "Pressure_data.csv")
+    fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D)',  '2015-01-01/2025-01-01', "Precipitation_data.csv")
+    fetch2 = FrostDataFetcher(client_id, source_id, 'sum(duration_of_sunshine P1D)', '2015-01-01/2025-01-01', "Sunshine_data.csv")
+    fetch3 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "Pressure_data.csv")
+    fetch1.run()
     fetch2.run()
+    fetch3.run()
