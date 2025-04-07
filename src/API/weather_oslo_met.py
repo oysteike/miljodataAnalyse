@@ -81,4 +81,4 @@ if __name__ == "__main__":
 
     fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D), sum(duration_of_sunshine P1D)',  '2015-01-01/2025-01-01')
     fetch2 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "Pressure_data.csv")
-    fetch1.run()
+    fetch2.run()
