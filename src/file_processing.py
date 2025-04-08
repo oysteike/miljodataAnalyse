@@ -149,3 +149,18 @@ def calculate_median(data, start_time, end_time):
     values = get_values(data, start_time, end_time)
     
     return np.median(values)
+
+
+def standard_deviation(data, start_time, end_time):
+    """
+    Beregner standardavviket av verdier for en spesifisert datatype innenfor et tidsintervall.
+    Args:
+        data (dict): Data som inneholder målinger.
+        start_time (str): Starttidspunkt i 'YYYY-MM-DD' format.
+        end_time (str): Sluttidspunkt i 'YYYY-MM-DD' format.
+    Returns:
+        float: Standardavviket av verdiene innenfor tidsintervallet.
+    """
+    values = get_values(data, start_time, end_time)
+    
+    return np.std(values)
