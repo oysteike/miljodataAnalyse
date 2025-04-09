@@ -73,6 +73,7 @@ def csv_reader(filename, datatyper):
     
     #Legger sammen nedbørsmengde for hver dag og får formatert om til dictionary med dato som key og datatype og måling som value i form av key-value par i en ny dictionary
     result = {}
+    df['referenceTimestamp'] = pd.to_datetime(df['referenceTimestamp']).dt.date
     grouped = df.groupby(['referenceTimestamp', 'datatype'])
     
     for (timestamp, datatype), group in grouped:
