@@ -8,8 +8,16 @@ def csv_reader(filename, datatyper):
     
     
     # Les CSV med korrekt format
-    df = pd.read_csv(filename, header=None, names=['datatype', 'value','unit', 'timeOffset', 'timeResolution', 'timeSeriesId', 'performanceCategory', 'qualityCode', '..', 'station', 'referenceTimestamp'])
-    
+    #df = pd.read_csv(filename, header=None, names=['datatype', 'value','unit', 'timeOffset', 'timeResolution', 'timeSeriesId', 'performanceCategory', 'qualityCode', '..', 'station', 'referenceTimestamp'])
+    df = pd.read_csv(filename, header=None)
+    standard_cols = [
+        'datatype', 'value','unit', 'timeOffset', 'timeResolution',
+        'timeSeriesId', 'performanceCategory', 'qualityCode', '..',
+        'station', 'referenceTimestamp'
+    ]
+    extra_cols = [f'extra_{i}' for i in range(df.shape[1] - len(standard_cols))]
+    df.columns = standard_cols + extra_cols
+
 
     
     # Sjekk at nødvendige kolonner finnes
@@ -23,7 +31,7 @@ def csv_reader(filename, datatyper):
         value = row['value']
         unit = row['unit']
         station = row['station']
-        timestamp = (row['referenceTimestamp'])[:10]
+        timestamp = str(row['referenceTimestamp'])[:10]
         
         
         records.append({
