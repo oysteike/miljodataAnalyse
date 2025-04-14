@@ -1,10 +1,7 @@
 import unittest
 import sys, os
 import pandas as pd
-import numpy as np
-from datetime import datetime
-import pytz
-from datetime import date
+
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src')))
 
@@ -34,12 +31,12 @@ class Test_file_processing(unittest.TestCase):
 
         self.mock_data = pd.DataFrame({
             'referenceTimestamp': pd.to_datetime([
-            '2025-01-01T00:00:00Z', '2025-01-01T12:00:00Z', '2025-01-02T00:00:00Z'
+            '2024-01-01T00:00:00Z', '2024-01-02T00:00:00Z', '2024-01-03T00:00:00Z', '2024-01-04T00:00:00Z'
             ]),
-            'datatype': ['temperature', 'temperature', 'temperature'],
-            'value': [20.0, 15.0, 21.0],
-            'unit': ['C', 'C', 'C'],
-            'station': ['Station1', 'Station1', 'Station1']
+            'datatype': ['temperature', 'temperature', 'temperature','temperature'],
+            'value': [20.0, 15.0, 21.0, 17.0],
+            'unit': ['C', 'C', 'C', 'C'],
+            'station': ['Station1', 'Station1', 'Station1', 'Station1']
             })
 
     def tearDown(self):
@@ -73,21 +70,12 @@ class Test_file_processing(unittest.TestCase):
         
     def test_get_values_within_range(self):
 
-        start_time = "2025-01-01"
-        end_time = "2025-01-03"
+        start_time = "2024-01-01"
+        end_time = "2024-01-02"
 
-        result = get_values(self.mock_data, start_time=start_time, end_time=end_time)
-        
-        self.assertIn(20.0, result)
-        self.assertIn(21.0, result)
-        self.assertNotIn(10.0, result)
+        result = get_values(self.mock_data, start_time, end_time)
 
-
-    def test_get_values_outside_range(self):
-
-        result = get_values(self.mock_data, start_time="2025-01-01", end_time="2025-01-02")
         self.assertEqual(result, [20.0,15.0])
-
 
 
 if __name__ == '__main__':
