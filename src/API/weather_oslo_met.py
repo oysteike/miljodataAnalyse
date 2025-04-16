@@ -76,63 +76,83 @@ class FrostDataFetcher:
             print("No data to process")
 
 
-def fetch_all_locations(client_id):
+def fetch_all_stations(client_id):
     """
-    Henter og filtrerer lokasjoner i Oslo, Akershus, Buskerud og Østfold.
-    Returnerer en dictionary { navn: [lon, lat] }
+    Henter værstasjoner i Buskerud.
+    Returnerer en dict: { navn: [source_id, [lon, lat]] }
     """
-    bounds = {
-        "min_lat": 58.9,
-        "max_lat": 61.0,
-        "min_lon": 8.2,
-        "max_lon": 11.5,
-    }
-    url = 'https://frost.met.no/sources/v0.jsonld'
-    response = requests.get(url, auth=(client_id, ''))
+    url = "https://frost.met.no/sources/v0.jsonld"
+    
+    polygon_buskerud = "POLYGON((8.2 59.3, 10.3 59.3, 10.3 61.3, 8.2 61.3, 8.2 59.3))"
+    params = {
+    "geometry": polygon_buskerud,
+    "types": "SensorSystem"
+}
+
+    response = requests.get(url, params=params, auth=(client_id, ""))
+    
     if response.status_code != 200:
-        print(f"Feil ved henting av lokasjoner: {response.status_code}")
+        print(f"⚠️  Feil ved henting av stasjoner: {response.status_code}")
+        print(response.text)
         return {}
 
     data = response.json().get("data", [])
-    locations = {}
-    for loc in data:
-        geometry = loc.get("geometry")
-        coords = geometry.get("coordinates") if geometry else None
-        if coords and len(coords) == 2:
-            lon, lat = coords
-            if bounds["min_lat"] <= lat <= bounds["max_lat"] and bounds["min_lon"] <= lon <= bounds["max_lon"]:
-                locations[loc.get("name", "Ukjent")] = coords
-    return locations
+    station_dict = {}
+
+    for entry in data:
+        name = entry.get("name")
+        source_id = entry.get("id")
+        coords = entry.get("geometry", {}).get("coordinates")
+        
+        if name and source_id and coords:
+            station_dict[name] = [source_id, coords]
+
+    return station_dict
+
 
 if __name__ == "__main__":
     client_id = "5b9e3b06-3d3d-4049-9b86-b52c0e8cfb81"
     ref_time = "2015-01-01/2025-01-01"
+    source_id = "SN90450"
 
     """
-    
+    fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D)',  '2015-01-01/2025-01-01', "Precipitation_data.csv")
+    fetch2 = FrostDataFetcher(client_id, source_id, 'sum(duration_of_sunshine P1D)', '2015-01-01/2025-01-01', "Sunshine_data.csv")
+    fetch3 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "Pressure_data.csv")
+    fetch1.run()
+    fetch2.run()
+    fetch3.run()
     """
 
     # Hent alle lokasjoner i regionen
-    locations_dict = fetch_all_locations(client_id)
+    station_dict = fetch_all_stations(client_id)
+    source_id_total = ""
 
     # Vis antall og spør bruker før videre kjøring
-    print(f"\n🔎 Fant {len(locations_dict)} værstasjoner i Oslo, Akershus, Buskerud og Østfold.")
+    print(f"\n🔎 Fant {len(station_dict)} værstasjoner i Buskerud.")
     confirm = input("Vil du hente data for alle disse? (ja/nei): ").strip().lower()
     if confirm != "ja":
         print("Avbrutt av bruker.")
-        exit()
+        pass
 
-    # For hver lokasjon: hent data og lagre som CSV
-    for name, coords in locations_dict.items():
-        source_id = f"SN{name.replace(' ', '')}"  # NB! Du må kanskje bruke faktisk sourceId fra Frost
-        print(f"📥 Henter data for: {name} ({source_id})")
+    else:
+        elements = [
+            "sum(precipitation_amount P1D)",
+            "max(surface_air_pressure P1D)"
+        ]
+        
+        for name, value in station_dict.items():
+            source_id_total += f",{value[0]}"
+        source_id_total = source_id_total[1:]
+        print(f"\n🔎 Henter data for {len(station_dict)} værstasjoner med source_id: {source_id_total}")
 
-        # Hent flere elementer for samme stasjon hvis ønskelig
-        fetch = FrostDataFetcher(
-            client_id,
-            source_id,
-            "sum(precipitation_amount P1D)",  # Justér for flere elementer hvis du ønsker
-            ref_time,
-            output_filename=f"{name.replace(' ', '_')}_precip.csv"
-        )
-        fetch.run()
+        for element in elements:
+            print(f"Henter data for alle stasjoner med element '{element}'")
+            fetch = FrostDataFetcher(
+                client_id,
+                source_id_total,
+                element, 
+                "2025-01-01/2025-02-01",
+                output_filename=f"Jan_{element}_Buskerud.csv"
+            )
+            fetch.run()
