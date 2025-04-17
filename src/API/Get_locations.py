@@ -1,39 +1,56 @@
 import requests
+import pandas as pd
 
-def fetch_all_locations(client_id):
+def fetch_all_stations(client_id, save=False, csv_filename="buskerud_stasjoner.csv", polygon = "POLYGON((8.2 59.3, 10.3 59.3, 10.3 61.3, 8.2 61.3, 8.2 59.3))"):
     """
-    Henter og filtrerer lokasjoner i Oslo, Akershus, Buskerud og Østfold.
-    Returnerer en dictionary { navn: [lon, lat] }
+    Henter værstasjoner, med buskerud som standard instilling.
+    Args:
+        client_id (str): Klient-ID for autentisering.
+        save (bool): Om data skal lagres som CSV.
+        csv_filename (str): Filnavn for CSV-filen.
+        polygon (str): Geometri i WKT-format for å spesifisere området.
+    Returnerer en dict: { navn: [source_id, [lon, lat]] }
+    Lagrer også en CSV med kolonnene: station_name, source_id, lon, lat
     """
-    client_id = "5b9e3b06-3d3d-4049-9b86-b52c0e8cfb81"
-
-    bounds = {
-        "min_lat": 58.9,
-        "max_lat": 61.0,
-        "min_lon": 8.2,
-        "max_lon": 11.5,
+    url = "https://frost.met.no/sources/v0.jsonld"
+    
+    
+    params = {
+        "geometry": polygon,
+        "types": "SensorSystem"
     }
-    url = 'https://frost.met.no/sources/v0.jsonld'
-    response = requests.get(url, auth=(client_id, ''))
+
+    response = requests.get(url, params=params, auth=(client_id, ""))
+    
     if response.status_code != 200:
-        print(f"Feil ved henting av lokasjoner: {response.status_code}")
+        print(f"⚠️  Feil ved henting av stasjoner: {response.status_code}")
+        print(response.text)
         return {}
 
     data = response.json().get("data", [])
-    locations = {}
-    for loc in data:
-        geometry = loc.get("geometry")
-        coords = geometry.get("coordinates") if geometry else None
-        if coords and len(coords) == 2:
+    rows = []
+    station_dict = {}
+
+    for entry in data:
+        name = entry.get("name")
+        source_id = entry.get("id")
+        coords = entry.get("geometry", {}).get("coordinates")
+        
+        if name and source_id and coords and len(coords) == 2:
             lon, lat = coords
-            if bounds["min_lat"] <= lat <= bounds["max_lat"] and bounds["min_lon"] <= lon <= bounds["max_lon"]:
-                locations[loc.get("name", "Ukjent")] = coords
-    return locations
+            station_dict[name] = [source_id, coords]
+            rows.append({
+                "station_name": name,
+                "source_id": source_id,
+                "lon": lon,
+                "lat": lat
+            })
+    if save:
+        # Lag DataFrame og lagre som CSV
+        df = pd.DataFrame(rows)
+        file_path = "data/" + csv_filename 
+        df.to_csv(file_path, index=False, encoding='utf-8')
 
-if __name__ == "__main__":
-    client_id = "5b9e3b06-3d3d-4049-9b86-b52c0e8cfb81"
-    ref_time = "2015-01-01/2025-01-01"
+        print(f"Stasjoner lagret som CSV: {file_path}")
 
-    # Hent alle lokasjoner i regionen
-    locations_dict = fetch_all_locations(client_id)
-    print(locations_dict)
+    return station_dict

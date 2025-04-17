@@ -1,7 +1,12 @@
 import requests
 import pandas as pd
 import os
-import json
+import sys
+
+modul_path = os.path.join(os.path.dirname(os.getcwd()), "src", "API" )
+sys.path.append(modul_path)
+
+from Get_locations import fetch_all_stations
 
 """
 This class fetches weather data fra frost.met.no and saves as csv
@@ -76,39 +81,6 @@ class FrostDataFetcher:
             print("No data to process")
 
 
-def fetch_all_stations(client_id):
-    """
-    Henter værstasjoner i Buskerud.
-    Returnerer en dict: { navn: [source_id, [lon, lat]] }
-    """
-    url = "https://frost.met.no/sources/v0.jsonld"
-    
-    polygon_buskerud = "POLYGON((8.2 59.3, 10.3 59.3, 10.3 61.3, 8.2 61.3, 8.2 59.3))"
-    params = {
-    "geometry": polygon_buskerud,
-    "types": "SensorSystem"
-}
-
-    response = requests.get(url, params=params, auth=(client_id, ""))
-    
-    if response.status_code != 200:
-        print(f"⚠️  Feil ved henting av stasjoner: {response.status_code}")
-        print(response.text)
-        return {}
-
-    data = response.json().get("data", [])
-    station_dict = {}
-
-    for entry in data:
-        name = entry.get("name")
-        source_id = entry.get("id")
-        coords = entry.get("geometry", {}).get("coordinates")
-        
-        if name and source_id and coords:
-            station_dict[name] = [source_id, coords]
-
-    return station_dict
-
 
 if __name__ == "__main__":
     client_id = "5b9e3b06-3d3d-4049-9b86-b52c0e8cfb81"
@@ -125,7 +97,7 @@ if __name__ == "__main__":
     """
 
     # Hent alle lokasjoner i regionen
-    station_dict = fetch_all_stations(client_id)
+    station_dict = fetch_all_stations(client_id, True)
     source_id_total = ""
 
     # Vis antall og spør bruker før videre kjøring
