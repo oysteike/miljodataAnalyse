@@ -3,9 +3,10 @@ import pandas as pd
 import os
 import sys
 
-modul_path = os.path.join(os.path.dirname(os.getcwd()), "src", "API" )
-sys.path.append(modul_path)
-
+modul_path = os.path.join(os.path.dirname(os.getcwd()), "src" )
+sys.path.append('/Users/georgrommetveit/Documents/anvendtprog/miljodataAnalyse/src')
+from data_processing import process_weather_data
+sys.path.append(os.path.join(modul_path, "API"))
 from Get_locations import fetch_all_stations
 
 """
@@ -18,7 +19,7 @@ save_to_csv to save the data as csv with pandas DataFrame
 run to run the whole process
 """
 class FrostDataFetcher:
-    def __init__(self, client_id, source_id, elements, ref_time, output_filename="met_data.csv"):
+    def __init__(self, client_id, source_id, elements, ref_time, output_filename="met_data.csv", stationsdata_path=None):
         """
         All variables expected to pull data from frost.met.no
         """
@@ -33,7 +34,7 @@ class FrostDataFetcher:
             'referencetime': ref_time,
         }
         self.output_filename = output_filename # Filename to save data as csv
-        self.data_adjusted = [] # List to store adjusted data
+        self.stationsdata_path = stationsdata_path # Path to stationsdata.csv, if needed
     
     def fetch_data(self):
         response = requests.get(self.endpoint, self.parameters, auth=(self.client_id, '')) # Pulls data from frost.met.no
@@ -50,22 +51,27 @@ class FrostDataFetcher:
             return None
     
     def process_data(self, data):
-        
-        for entry in data:
-            source_id = entry.get("sourceId", "N/A") # If sourceId is not found, set to "N/A"
-            ref_time = entry.get("referenceTime", "N/A")
-            
-            for obs in entry.get("observations", []): 
-                obs["sourceId"] = source_id # Set value for sourceId in observations
-                obs["referenceTime"] = ref_time # Set value for referenceTime in observations
-                self.data_adjusted.append(obs) # Appends only the observations to the list
-        
-    def save_to_csv(self):
+        """
+        Process the data to a better format
+        """
         try:
-            df = pd.json_normalize(self.data_adjusted)
-            df.fillna("N/A", inplace=True, downcast="infer") # Fill all NaN values with "N/A"
+            df = pd.json_normalize(data)
+            #print(df.iloc[1, 2])
+            #print(df.head())
+            #print(f"Data contains {len(df)} rows and {len(df.columns)} columns.")
+            #print(f"Data types:\n{df.dtypes}")
+            #print(f"Missing values:\n{df.isnull().sum()}")
+        except Exception as e:
+            print(f"Error when converting data to DataFrame: {e}")
+            return None
+        df = process_weather_data(df, self.stationsdata_path) # Call the function to process the data
+        return df
+    
+    def save_to_csv(self, df):
+        try:
+
             output_path = os.path.join(os.getcwd(), "data", self.output_filename)
-            df.to_csv(output_path, index=False, encoding="utf-8", header=False) # Save as csv with path
+            df.to_csv(output_path, index=False, encoding="utf-8") # Save as csv with path
             print(f"Data saved as CSV at {output_path}")
 
         except Exception as e: # If error occurs during saving
@@ -74,8 +80,11 @@ class FrostDataFetcher:
     def run(self): # Own method to run the whole process
         data = self.fetch_data()
         if data:
-            self.process_data(data)
-            self.save_to_csv()
+            df = self.process_data(data)
+            if df is not None:
+                self.save_to_csv(df)
+            else:
+                print("Error processing data")
         else:
             print("No data to process")
 
@@ -91,15 +100,15 @@ if __name__ == "__main__":
     fetch3 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "Pressure_data.csv")
     fetch1.run()
     fetch2.run()
-    fetch3.run()
+    #fetch3.run()
     """
     
+
     # Hent alle lokasjoner i regionen
-    station_dict = fetch_all_stations(client_id, True)
-    source_id_total = ""
+    stations_df = pd.read_csv("data/buskerud_stasjoner.csv", dtype={'source_id': str})
 
     # Vis antall og spør bruker før videre kjøring
-    print(f"\n🔎 Fant {len(station_dict)} værstasjoner i Buskerud.")
+    print(f"Det er funnet følgende antall stasjoner i Buskerud: {len(stations_df)}")
     confirm = input("Vil du hente data for alle disse? (ja/nei): ").strip().lower()
     if confirm != "ja":
         print("Avbrutt av bruker.")
@@ -111,10 +120,7 @@ if __name__ == "__main__":
             "max(surface_air_pressure P1D)"
         ]
         
-        for name, value in station_dict.items():
-            source_id_total += f",{value[0]}"
-        source_id_total = source_id_total[1:]
-        print(f"\n🔎 Henter data for {len(station_dict)} værstasjoner med source_id: {source_id_total}")
+        source_id_total = ",".join(stations_df['source_id'].unique().astype(str))
 
         for element in elements:
             print(f"Henter data for alle stasjoner med element '{element}'")
@@ -123,6 +129,8 @@ if __name__ == "__main__":
                 source_id_total,
                 element, 
                 "2025-01-01/2025-02-01",
-                output_filename=f"Jan_{element}_Buskerud.csv"
+                output_filename=f"Jan_{element}_Buskerud.csv",
+                stationsdata_path=os.path.join(os.getcwd(), "data", "buskerud_stasjoner.csv") # Path to stationsdata.csv
             )
             fetch.run()
+    
