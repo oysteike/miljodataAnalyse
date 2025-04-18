@@ -5,7 +5,7 @@ from scipy.stats import zscore
 from sklearn.linear_model import LinearRegression
 
 
-def csv_reader(filename, datatyper):
+def csv_reader(filename, datatyper, stationsdata_path=False):
     """
     Leser en CSV-fil og returnerer en pandas DataFrame i et oversiktlig format.
     Fjerner store avvik ved hjelp av Z-score og fyller inn manglende verdier ved hjelp av lineær regresjon.
@@ -13,9 +13,11 @@ def csv_reader(filename, datatyper):
     Args:
         filename (str): Filnavnet til CSV-filen som skal leses.
         datatyper (list): Liste over datatyper som skal behandles.
+        metadata_path (str): Sti til metadatafilen (valgfritt).
     
     Returns:
         pd.DataFrame: En DataFrame med kolonnene ['referenceTimestamp', 'datatype', 'value', 'unit', 'station'].
+        dersom stationsdata_path (fil med værstasjonenes navn og posisjon) er spesifisert, vil den legge til kolonnene ['station_name', 'lon', 'lat'].
     """
     # Definer forventede kolonner i CSV-filen
     expected_columns = ['datatype', 'value', 'unit', 'timeOffset', 'timeResolution', 
@@ -49,7 +51,7 @@ def csv_reader(filename, datatyper):
    # Sett referenceTimestamp som indeks
     df = df.set_index('referenceTimestamp')
 
-    # Gruppér dataene etter dato og datatype, og summer verdiene (All data skal være daglig data)
+    # Gruppér dataene etter dato og datatype, og summer verdiene fra samme dag
     df = df.resample('D').agg({
         'datatype': 'first',
         'value': 'sum',  # Summer verdiene
@@ -77,8 +79,23 @@ def csv_reader(filename, datatyper):
         
         # Oppdater hoved-DataFrame med de utfylte verdiene
         df.update(subset)
-    
-    # Returner den formatterte DataFrame
+    if stationsdata_path:
+        try:
+            metadata = pd.read_csv(stationsdata_path, dtype={'source_id': str})
+            df['station'] = df['station'].astype(str)  # Sørg for samsvarende datatype
+            metadata['source_id'] = metadata['source_id'].astype(str)
+            
+            # Merge på 'station' (målt data) == 'source_id' (metadata)
+            df = df.merge(metadata[['source_id', 'station_name', 'lon', 'lat']],
+                        how='left',
+                        left_on='station',
+                        right_on='source_id')
+            df = df.drop(columns=['source_id'])  # Fjern duplikatkolonne
+        except FileNotFoundError:
+            print(f"Advarsel: Fant ikke fil på {stationsdata_path}. Koordinater og stasjonsnavn blir ikke lagt til.")
+        return df
+
+        # Returner den formatterte DataFrame
     return df[['referenceTimestamp', 'datatype', 'value', 'unit', 'station']]
 
 

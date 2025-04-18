@@ -1,7 +1,12 @@
 import requests
 import pandas as pd
 import os
-import json
+import sys
+
+modul_path = os.path.join(os.path.dirname(os.getcwd()), "src", "API" )
+sys.path.append(modul_path)
+
+from Get_locations import fetch_all_stations
 
 """
 This class fetches weather data fra frost.met.no and saves as csv
@@ -27,7 +32,6 @@ class FrostDataFetcher:
             'elements': elements,
             'referencetime': ref_time,
         }
-
         self.output_filename = output_filename # Filename to save data as csv
         self.data_adjusted = [] # List to store adjusted data
     
@@ -46,6 +50,7 @@ class FrostDataFetcher:
             return None
     
     def process_data(self, data):
+        
         for entry in data:
             source_id = entry.get("sourceId", "N/A") # If sourceId is not found, set to "N/A"
             ref_time = entry.get("referenceTime", "N/A")
@@ -55,7 +60,6 @@ class FrostDataFetcher:
                 obs["referenceTime"] = ref_time # Set value for referenceTime in observations
                 self.data_adjusted.append(obs) # Appends only the observations to the list
         
-    
     def save_to_csv(self):
         try:
             df = pd.json_normalize(self.data_adjusted)
@@ -75,13 +79,50 @@ class FrostDataFetcher:
         else:
             print("No data to process")
 
+
 if __name__ == "__main__":
     client_id = "5b9e3b06-3d3d-4049-9b86-b52c0e8cfb81"
+    ref_time = "2015-01-01/2025-01-01"
     source_id = "SN90450"
 
+    """
     fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D)',  '2015-01-01/2025-01-01', "Precipitation_data.csv")
     fetch2 = FrostDataFetcher(client_id, source_id, 'sum(duration_of_sunshine P1D)', '2015-01-01/2025-01-01', "Sunshine_data.csv")
     fetch3 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "Pressure_data.csv")
     fetch1.run()
     fetch2.run()
     fetch3.run()
+    """
+    
+    # Hent alle lokasjoner i regionen
+    station_dict = fetch_all_stations(client_id, True)
+    source_id_total = ""
+
+    # Vis antall og spør bruker før videre kjøring
+    print(f"\n🔎 Fant {len(station_dict)} værstasjoner i Buskerud.")
+    confirm = input("Vil du hente data for alle disse? (ja/nei): ").strip().lower()
+    if confirm != "ja":
+        print("Avbrutt av bruker.")
+        pass
+
+    else:
+        elements = [
+            "sum(precipitation_amount P1D)",
+            "max(surface_air_pressure P1D)"
+        ]
+        
+        for name, value in station_dict.items():
+            source_id_total += f",{value[0]}"
+        source_id_total = source_id_total[1:]
+        print(f"\n🔎 Henter data for {len(station_dict)} værstasjoner med source_id: {source_id_total}")
+
+        for element in elements:
+            print(f"Henter data for alle stasjoner med element '{element}'")
+            fetch = FrostDataFetcher(
+                client_id,
+                source_id_total,
+                element, 
+                "2025-01-01/2025-02-01",
+                output_filename=f"Jan_{element}_Buskerud.csv"
+            )
+            fetch.run()
