@@ -51,6 +51,7 @@ class FrostDataFetcher:
             return None
     
     def process_data(self, data):
+        
         for entry in data:
             source_id = entry.get("sourceId", "N/A") # If sourceId is not found, set to "N/A"
             ref_time = entry.get("referenceTime", "N/A")
@@ -79,7 +80,6 @@ class FrostDataFetcher:
             self.save_to_csv()
         else:
             print("No data to process")
-
 
 
 if __name__ == "__main__":
