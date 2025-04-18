@@ -32,7 +32,6 @@ class FrostDataFetcher:
             'elements': elements,
             'referencetime': ref_time,
         }
-
         self.output_filename = output_filename # Filename to save data as csv
         self.data_adjusted = [] # List to store adjusted data
     
@@ -61,7 +60,6 @@ class FrostDataFetcher:
                 obs["referenceTime"] = ref_time # Set value for referenceTime in observations
                 self.data_adjusted.append(obs) # Appends only the observations to the list
         
-    
     def save_to_csv(self):
         try:
             df = pd.json_normalize(self.data_adjusted)
@@ -95,7 +93,7 @@ if __name__ == "__main__":
     fetch2.run()
     fetch3.run()
     """
-
+    
     # Hent alle lokasjoner i regionen
     station_dict = fetch_all_stations(client_id, True)
     source_id_total = ""
