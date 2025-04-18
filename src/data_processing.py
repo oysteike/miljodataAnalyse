@@ -84,7 +84,7 @@ def add_station_metadata(df, stationsdata_path):
     """
     try:
         metadata = pd.read_csv(stationsdata_path, dtype={'source_id': str})
-        df['sourceId'] = df['sourceId'].astype(str)
+        df['sourceId'] = df['sourceId'].astype(str).str.split(':').str[0] # Fjerner spesikikkasjon av hvilke måleinstrument på værstasjonen
         metadata['source_id'] = metadata['source_id'].astype(str)
 
         df = df.merge(metadata[['source_id', 'station_name', 'lon', 'lat']],
