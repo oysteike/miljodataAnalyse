@@ -21,7 +21,7 @@ def clean_columns(df):
                 'referenceTimestamp': adj_time,
                 'datatype': obs['elementId'],
                 'value': obs['value'],
-                'unit': obs['unit']
+                'unit': obs['unit'],
             })
     return pd.DataFrame(rows)
 
@@ -109,5 +109,5 @@ def process_weather_data(df, stationsdata_path=None):
     if stationsdata_path:
         df = add_station_metadata(df, stationsdata_path)
 
-    return df[['sourceId', 'referenceTimestamp', 'value', 'unit', 'lon', 'lat'] if 'lon' in df.columns else ['sourceId', 'referenceTimestamp', 'value', 'unit']]
+    return df[['sourceId', 'referenceTimestamp', 'datatype', 'value', 'unit', 'lon', 'lat'] if 'lon' in df.columns else ['sourceId', 'referenceTimestamp', 'datatype', 'value', 'unit']]
 

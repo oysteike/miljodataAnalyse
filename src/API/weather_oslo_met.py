@@ -3,11 +3,10 @@ import pandas as pd
 import os
 import sys
 
-modul_path = os.path.join(os.path.dirname(os.getcwd()), "src" )
-sys.path.append('/Users/georgrommetveit/Documents/anvendtprog/miljodataAnalyse/src')
+modul_path = os.path.join(os.getcwd(), "src")
+sys.path.append(modul_path)
 from data_processing import process_weather_data
-sys.path.append(os.path.join(modul_path, "API"))
-from Get_locations import fetch_all_stations
+
 
 """
 This class fetches weather data fra frost.met.no and saves as csv
@@ -103,7 +102,7 @@ if __name__ == "__main__":
     fetch3.run()
     
     
-    """
+    
     # Hent alle lokasjoner i regionen
     stations_df = pd.read_csv("data/buskerud_stasjoner.csv", dtype={'source_id': str})
 
@@ -133,4 +132,3 @@ if __name__ == "__main__":
                 stationsdata_path=os.path.join(os.getcwd(), "data", "buskerud_stasjoner.csv") # Path to stationsdata.csv
             )
             fetch.run()
-    """
