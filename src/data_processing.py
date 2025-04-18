@@ -1,174 +1,113 @@
-import ast
 import pandas as pd
 import numpy as np
 from scipy.stats import zscore
 from sklearn.linear_model import LinearRegression
+from datetime import timedelta
+import isodate
 
+def clean_columns(df):
+    """
+    Ekspanderer observations-kolonnen og trekker ut relevante felter.
+    """
+    rows = []
+    for _, row in df.iterrows():
+        source_id = row['sourceId']
+        ref_time = pd.to_datetime(row['referenceTime'])
+        for obs in row['observations']:
+            time_offset = isodate.parse_duration(obs.get('timeOffset', 'PT0H'))
+            adj_time = ref_time + timedelta(seconds=time_offset.total_seconds())
+            rows.append({
+                'sourceId': source_id,
+                'referenceTimestamp': adj_time,
+                'datatype': obs['elementId'],
+                'value': obs['value'],
+                'unit': obs['unit']
+            })
+    return pd.DataFrame(rows)
 
-def csv_reader(filename, datatyper, stationsdata_path=False):
+def preprocess_dataframe(df):
     """
-    Leser en CSV-fil og returnerer en pandas DataFrame i et oversiktlig format.
-    Fjerner store avvik ved hjelp av Z-score og fyller inn manglende verdier ved hjelp av lineær regresjon.
-    
-    Args:
-        filename (str): Filnavnet til CSV-filen som skal leses.
-        datatyper (list): Liste over datatyper som skal behandles.
-        metadata_path (str): Sti til metadatafilen (valgfritt).
-    
-    Returns:
-        pd.DataFrame: En DataFrame med kolonnene ['referenceTimestamp', 'datatype', 'value', 'unit', 'station'].
-        dersom stationsdata_path (fil med værstasjonenes navn og posisjon) er spesifisert, vil den legge til kolonnene ['station_name', 'lon', 'lat'].
+    Konverterer verdier og tidsstempel, fjerner ugyldige rader.
     """
-    # Definer forventede kolonner i CSV-filen
-    expected_columns = ['datatype', 'value', 'unit', 'timeOffset', 'timeResolution', 
-                        'timeSeriesId', 'performanceCategory', 'qualityCode', '..', 
-                        'station', 'referenceTimestamp']
-    
-    # Les CSV-filen og ignorer eventuelle ekstra kolonner
-    df = pd.read_csv(filename, usecols=range(len(expected_columns)), header=None, names=expected_columns, dtype={'referenceTimestamp': str})
-    
-    # Sjekk at nødvendige kolonner finnes i DataFrame
-    if not set(expected_columns).issubset(df.columns):
-        raise ValueError("CSV-filen har ikke forventede kolonner: 'datatype', 'value', 'unit', 'timeOffset', 'timeResolution', 'timeSeriesId', 'performanceCategory', 'qualityCode', '..', 'station', 'referenceTimestamp'")
-    
-    # Konverter 'value' til numerisk datatype (håndterer eventuelle feilverdier)
     df['value'] = pd.to_numeric(df['value'], errors='coerce')
-    
-    # Konverter 'referenceTimestamp' til datetime-format
     df['referenceTimestamp'] = pd.to_datetime(df['referenceTimestamp'], errors='coerce')
-    
-    # Fjern rader med ugyldige tidsstempler
     df = df.dropna(subset=['referenceTimestamp'])
-    
-    # Fjern store avvik ved hjelp av Z-score
+    return df
+
+def remove_outliers(df):
+    """
+    Fjerner outliers med Z-score.
+    """
     df['value'] = df.groupby('datatype')['value'].transform(
-        lambda x: x.where(np.abs(zscore(x)) < 3)
+        lambda x: x.where(np.abs(zscore(x.dropna())) < 3, np.nan)
     )
-    
-     # Sorter data etter tid
+    return df
+
+def resample_and_aggregate(df):
+    """
+    Beholder siste måling per dag og stasjon.
+    """
     df = df.sort_values('referenceTimestamp')
+    df['date'] = df['referenceTimestamp'].dt.floor('D')
+    df = df.groupby(['date', 'sourceId']).tail(1)
+    df = df.drop(columns=['date'])
+    return df
 
-   # Sett referenceTimestamp som indeks
-    df = df.set_index('referenceTimestamp')
-
-    # Gruppér dataene etter dato og datatype, og summer verdiene fra samme dag
-    df = df.resample('D').agg({
-        'datatype': 'first',
-        'value': 'sum',  # Summer verdiene
-        'unit': 'first',  # Behold den første enheten (antar at den er lik for alle rader)
-        'station': 'first'  # Behold den første stasjonen (antar at den er lik for alle rader)
-    }).reset_index()
-    
-    # Fyll inn manglende verdier ved hjelp av lineær regresjon
-    for datatype in datatyper:
+def fill_missing_values(df):
+    """
+    Fyller manglende verdier med lineær regresjon per datatype.
+    """
+    for datatype in df['datatype'].unique():
         subset = df[df['datatype'] == datatype].copy()
+        if subset.empty:
+            continue
+
         subset = subset.sort_values('referenceTimestamp')
-        
-        # Konverter tid til numerisk verdi for regresjon
         subset['time_numeric'] = (subset['referenceTimestamp'] - subset['referenceTimestamp'].min()).dt.total_seconds()
-        
+
         missing_mask = subset['value'].isna()
         if missing_mask.any() and not subset['value'].isna().all():
             reg = LinearRegression()
             known_x = subset.loc[~missing_mask, 'time_numeric'].values.reshape(-1, 1)
             known_y = subset.loc[~missing_mask, 'value'].values
             reg.fit(known_x, known_y)
-            
+
             pred_x = subset.loc[missing_mask, 'time_numeric'].values.reshape(-1, 1)
             subset.loc[missing_mask, 'value'] = reg.predict(pred_x)
-        
-        # Oppdater hoved-DataFrame med de utfylte verdiene
-        df.update(subset)
+
+        df.update(subset.drop(columns=['time_numeric']))
+    return df
+
+def add_station_metadata(df, stationsdata_path):
+    """
+    Legger til stasjonsnavn og koordinater hvis metadata er tilgjengelig.
+    """
+    try:
+        metadata = pd.read_csv(stationsdata_path, dtype={'source_id': str})
+        df['sourceId'] = df['sourceId'].astype(str)
+        metadata['source_id'] = metadata['source_id'].astype(str)
+
+        df = df.merge(metadata[['source_id', 'station_name', 'lon', 'lat']],
+                      how='left',
+                      left_on='sourceId',
+                      right_on='source_id')
+        df = df.drop(columns=['source_id'])
+    except FileNotFoundError:
+        print(f"Advarsel: Fant ikke fil på {stationsdata_path}. Koordinater og stasjonsnavn blir ikke lagt til.")
+    return df
+
+def process_weather_data(df, stationsdata_path=None):
+    """
+    Hovedprosess som kjører hele rensingen og prosesseringen.
+    """
+    df = clean_columns(df)
+    df = preprocess_dataframe(df)
+    df = remove_outliers(df)
+    df = resample_and_aggregate(df)
+    df = fill_missing_values(df)
+
     if stationsdata_path:
-        try:
-            metadata = pd.read_csv(stationsdata_path, dtype={'source_id': str})
-            df['station'] = df['station'].astype(str)  # Sørg for samsvarende datatype
-            metadata['source_id'] = metadata['source_id'].astype(str)
-            
-            # Merge på 'station' (målt data) == 'source_id' (metadata)
-            df = df.merge(metadata[['source_id', 'station_name', 'lon', 'lat']],
-                        how='left',
-                        left_on='station',
-                        right_on='source_id')
-            df = df.drop(columns=['source_id'])  # Fjern duplikatkolonne
-        except FileNotFoundError:
-            print(f"Advarsel: Fant ikke fil på {stationsdata_path}. Koordinater og stasjonsnavn blir ikke lagt til.")
-        return df
+        df = add_station_metadata(df, stationsdata_path)
 
-        # Returner den formatterte DataFrame
-    return df[['referenceTimestamp', 'datatype', 'value', 'unit', 'station']]
+    return df[['sourceId', 'referenceTimestamp', 'value', 'unit', 'lon', 'lat'] if 'lon' in df.columns else ['sourceId', 'referenceTimestamp', 'value', 'unit']]
 
-
-def get_values(data, start_time='2015-01-01', end_time='2025-01-01'):
-    """
-    Henter verdier for en spesifisert datatype innenfor et tidsintervall.
-    Args:
-        data (pd.DataFrame): Data som inneholder målinger.
-        start_time (str): Starttidspunkt i 'YYYY-MM-DD' format.
-        end_time (str): Sluttidspunkt i 'YYYY-MM-DD' format.
-    Returns:
-        list: Liste med verdier for den spesifiserte datatype innenfor tidsintervallet.
-    """
-    # Konverter start- og sluttidspunkt til datetime
-    start_time = pd.to_datetime(start_time, errors='coerce').tz_localize('UTC')
-    end_time = pd.to_datetime(end_time, errors='coerce').tz_localize('UTC')
-
-    # Filtrer data innenfor tidsintervallet
-    mask = (data['referenceTimestamp'] >= start_time) & (data['referenceTimestamp'] <= end_time)
-    filtered_data = data.loc[mask]
-
-    # Hent verdier for den spesifiserte datatype
-    values = []
-    for _, row in filtered_data.iterrows():
-        try:
-            value = float(row['value'])
-            values.append(value)
-        except ValueError:
-            pass  # Ignorer ugyldige verdier
-
-    return values
-
-
-def mean(data, start_time='2015-01-01', end_time='2025-01-01'):
-    """
-    Beregner gjennomsnittet av verdier for en spesifisert datatype innenfor et tidsintervall.
-    Args:
-        data (pd:DataFrame): Data som inneholder målinger.
-        start_time (str): Starttidspunkt i 'YYYY-MM-DD' format.
-        end_time (str): Sluttidspunkt i 'YYYY-MM-DD' format.
-    Returns:
-        float: Gjennomsnittet av verdiene innenfor tidsintervallet.
-    """
-    values = get_values(data, start_time, end_time)
-    
-    return np.mean(values)
-
-
-def median(data, start_time='2015-01-01', end_time='2025-01-01'):
-    """
-    Beregner medianen av verdier for en spesifisert datatype innenfor et tidsintervall.
-    Args:
-        data (pd.DataFrame): Data som inneholder målinger.
-        start_time (str): Starttidspunkt i 'YYYY-MM-DD' format.
-        end_time (str): Sluttidspunkt i 'YYYY-MM-DD' format.
-    Returns:
-        float: Medianen av verdiene innenfor tidsintervallet.
-    """
-    values = get_values(data, start_time, end_time)
-    
-    return np.median(values)
-
-
-def standard_deviation(data, start_time='2015-01-01', end_time='2025-01-01'):
-    """
-    Beregner standardavviket av verdier for en spesifisert datatype innenfor et tidsintervall.
-    Args:
-        data (pd.DataFrame): Data som inneholder målinger.
-        start_time (str): Starttidspunkt i 'YYYY-MM-DD' format.
-        end_time (str): Sluttidspunkt i 'YYYY-MM-DD' format.
-    Returns:
-        float: Standardavviket av verdiene innenfor tidsintervallet.
-    """
-    values = get_values(data, start_time, end_time)
-    
-    return np.std(values)
