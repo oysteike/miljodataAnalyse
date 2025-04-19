@@ -12,7 +12,7 @@ LAT = "lat"
 VALUE = "value"
 UNIT = "unit"
 OUTFILE = 'weather_map.html'
-MAPBOX_TOKEN= os.getenv("pk.eyJ1IjoiZ2Vvcmdicm8iLCJhIjoiY205bXFudjFhMGViMDJqcXV3eW54Y2dqeSJ9.pr7FzSwAzpFvgpFupzOuWg") 
+MAPBOX_TOKEN = "pk.eyJ1IjoiZ2Vvcmdicm8iLCJhIjoiY205bXFudjFhMGViMDJqcXV3eW54Y2dqeSJ9.pr7FzSwAzpFvgpFupzOuWg"
 
 # --- Last alle data inn, slå sammen til én DF ---
 def load_all_data(data_dir):
@@ -42,6 +42,12 @@ selected_date = dates[date]
 
 # --- Filtrer data ---
 filtered_df = df[(df["datatype"] == datatype) & (df["referenceTimestamp"] == selected_date)]
+filtered_df = filtered_df[filtered_df["value"] > 0]
+filtered_df["scaled_value"] = filtered_df["value"] * 10  # eller mer
+
+
+# --- kartstil ---
+map_style = f"mapbox://styles/mapbox/light-v9?access_token={MAPBOX_TOKEN}"
 
 # --- Lag heatmap ---
 view_state = pdk.ViewState(
@@ -67,7 +73,8 @@ layer = pdk.Layer(
 
 r = pdk.Deck(
     layers=[layer],
-    initial_view_state=view_state
+    initial_view_state=view_state,
+    map_style=map_style
 )
 
 st.pydeck_chart(r)
@@ -85,27 +92,25 @@ df_sel = df[
 mid_lon = df_sel[LON].mean()
 mid_lat = df_sel[LAT].mean()
 
+# HeatmapLayer med justerte parametere
 layer = pdk.Layer(
     "HeatmapLayer",
-    data=df_sel,
+    data=filtered_df,
     get_position=[LON, LAT],
-    get_weight=VALUE,
-    radiusPixels=60,
-    opacity=0.7,
+    get_weight="scaled_value",
+    radiusPixels=70,       
+    intensity=2,           # Standard er 1, men du kan prøve f.eks. 2
+    threshold=0.06,        # Gjør kartet mer sensitivt (default 0.03)
+    aggregation='MEAN',   # Eller 'SUM', avhenger av hva du ønsker
+    opacity=0.9
 )
 
 view_state = pdk.ViewState(
     longitude=mid_lon,
     latitude=mid_lat,
-    zoom=8,
+    zoom=7,
     pitch=0,
 )
-
-# Hvis du bruker Mapbox, må du ha map_style med din Mapbox-nøkkel
-if MAPBOX_TOKEN:
-    map_style = f"mapbox://styles/mapbox/light-v9?access_token={MAPBOX_TOKEN}"
-else:
-    map_style = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"  # Bruk OpenStreetMap hvis ingen Mapbox-nøkkel er tilgjengelig
 
 deck = pdk.Deck(
     layers=[layer],
@@ -113,11 +118,20 @@ deck = pdk.Deck(
     map_style=map_style,  # Bruk riktig map_style med nøkkel
 )
 
+# Gir oversikt over datamengde og innhold
+st.write("Antall rader i data:", len(filtered_df))
+st.dataframe(filtered_df.head())
+
+# Gir oversikt over values
+st.write(filtered_df["value"].describe())
+st.write("Antall NaN:", filtered_df["value"].isna().sum())
+
+
+
 # --- Skriv ut til HTML ---
 deck.to_html(
     OUTFILE,
-    notebook_display=False,   # Ikke forsøke jupyter‐display
-    open_browser=True       # Ikke åpne automatisk
+    open_browser=False       # Ikke åpne automatisk
 )
 
 print(f"Generert HTML-side: {OUTFILE}")
