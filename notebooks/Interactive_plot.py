@@ -120,4 +120,4 @@ deck.to_html(
     open_browser=True       # Ikke åpne automatisk
 )
 
-print(f"Generert HTML‐side: {OUTFILE}")
+print(f"Generert HTML-side: {OUTFILE}")
