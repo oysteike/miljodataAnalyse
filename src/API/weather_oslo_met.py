@@ -93,42 +93,44 @@ if __name__ == "__main__":
     ref_time = "2015-01-01/2025-01-01"
     source_id = "SN90450"
 
-    
+    """
     fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D)',  '2015-01-01/2025-01-01', "Precipitation_data.csv")
     fetch2 = FrostDataFetcher(client_id, source_id, 'sum(duration_of_sunshine P1D)', '2015-01-01/2025-01-01', "Sunshine_data.csv")
     fetch3 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "Pressure_data.csv")
     fetch1.run()
     fetch2.run()
     fetch3.run()
+    """
     
-    
-    
-    # Hent alle lokasjoner i regionen
-    stations_df = pd.read_csv("data/buskerud_stasjoner.csv", dtype={'source_id': str})
-
-    # Vis antall og spør bruker før videre kjøring
-    print(f"Det er funnet følgende antall stasjoner i Buskerud: {len(stations_df)}")
-    confirm = input("Vil du hente data for alle disse? (ja/nei): ").strip().lower()
-    if confirm != "ja":
-        print("Avbrutt av bruker.")
-        pass
-
-    else:
-        elements = [
-            "sum(precipitation_amount P1D)",
-            "max(surface_air_pressure P1D)"
-        ]
+    for station_name in ['Agder', 'Innlandet', 'Oslo', 'Viken', 'Vestfold og Telemark', 'Møre og Romsdal', 'Nordland', 'Vestland', 'Trøndelag', 'Troms og Finnmark', 'Rogaland']:
         
-        source_id_total = ",".join(stations_df['source_id'].unique().astype(str))
+        # Hent alle lokasjoner i regionen
+        stationsdata_path = os.path.join(os.getcwd(), "data", "Verstasjoner", f"{station_name}_stations.csv")
+        stations_df = pd.read_csv(stationsdata_path)
 
-        for element in elements:
-            print(f"Henter data for alle stasjoner med element '{element}'")
-            fetch = FrostDataFetcher(
-                client_id,
-                source_id_total,
-                element, 
-                "2025-01-01/2025-02-01",
-                output_filename=f"Jan_{element}_Buskerud.csv",
-                stationsdata_path=os.path.join(os.getcwd(), "data", "buskerud_stasjoner.csv") # Path to stationsdata.csv
-            )
-            fetch.run()
+        # Vis antall og spør bruker før videre kjøring
+        print(f"Det er funnet følgende antall stasjoner i {station_name}: {len(stations_df)}")
+        confirm = input("Vil du hente data for alle disse? (ja/nei): ").strip().lower()
+        if confirm != "ja":
+            print("Avbrutt av bruker.")
+            pass
+
+        else:
+            elements = [
+                "sum(precipitation_amount P1D)",
+            ]
+            
+            source_id_total = ",".join(stations_df['source_id'].unique().astype(str))
+
+            for element in elements:
+                print(f"Henter data for alle stasjoner med element '{element}'")
+                fetch = FrostDataFetcher(
+                    client_id,
+                    source_id_total,
+                    element, 
+                    "2025-01-01/2025-02-01",
+                    output_filename=f"Jan_2025/{element}_{station_name}.csv",
+                    stationsdata_path=stationsdata_path # Path to stationsdata.csv
+                )
+                fetch.run()
+    

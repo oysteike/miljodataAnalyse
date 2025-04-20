@@ -3,135 +3,163 @@ import pandas as pd
 import glob
 import os
 import pydeck as pdk
+import datetime
+import numpy as np
+from scipy.interpolate import griddata
 
-# --- Konfigurasjon ---
-DATA_DIR = os.getcwd() # mappe med rain.csv, pressure.csv, osv.
-TIMESTAMP = "referenceTimestamp"
-LON = "lon"
-LAT = "lat"
-VALUE = "value"
-UNIT = "unit"
-OUTFILE = 'weather_map.html'
-MAPBOX_TOKEN = "pk.eyJ1IjoiZ2Vvcmdicm8iLCJhIjoiY205bXFudjFhMGViMDJqcXV3eW54Y2dqeSJ9.pr7FzSwAzpFvgpFupzOuWg"
+# ----------------------------------------------------------------------------
+# Streamlit-app: Heatmap for værdata i januar 2025 over hele landet
+# ----------------------------------------------------------------------------
 
-# --- Last alle data inn, slå sammen til én DF ---
-def load_all_data(data_dir):
+# --- KONFIGURASJON ---
+DATA_DIR    = os.getcwd()  # Rotmappe for data/data/Jan_2025/*.csv
+TIMESTAMP   = "referenceTimestamp"
+LON         = "lon"
+LAT         = "lat"
+VALUE       = "value"
+OUTFILE     = 'weather_map.html'
+MAPBOX_TOKEN = (
+    "pk.eyJ1IjoiZ2Vvcmdicm8iLCJhIjoiY205bXFudjFhMGViMDJqcXV3eW54Y2dqeSJ9."
+    "pr7FzSwAzpFvgpFupzOuWg"
+)
+MAP_STYLE = f"mapbox://styles/mapbox/light-v9?access_token={MAPBOX_TOKEN}"
+
+# ----------------------------------------------------------------------------
+# FUNKSJONER
+# ----------------------------------------------------------------------------
+
+def load_data(data_dir):
+    """
+    Leser inn alle CSV-filer for januar 2025 og tagger dem med datatype hentet fra filnavn.
+    Returnerer en sammenslått DataFrame.
+    """
     dfs = []
-    for path in glob.glob(os.path.join(data_dir,"data", "Jan_2025", "*.csv")):
-        mtype = os.path.splitext(os.path.basename(path))[0]
+    for path in glob.glob(os.path.join(data_dir, "data", "Jan_2025", "*.csv")):
+        fname = os.path.splitext(os.path.basename(path))[0]
+        mtype = fname.split("_")[0]
+
         df = pd.read_csv(path)
         df[TIMESTAMP] = pd.to_datetime(df[TIMESTAMP], utc=True)
-        df["referenceTimestamp"] = df[TIMESTAMP].dt.date.astype(str) # som tekst
+        df["referenceTimestamp"] = df[TIMESTAMP].dt.date.astype(str)
         df["datatype"] = mtype
         dfs.append(df)
+
     return pd.concat(dfs, ignore_index=True)
 
-df = load_all_data(DATA_DIR)
+def filter_data(df, datatype, selected_date):
+    """
+    Filtrerer etter ønsket datatype og dato. Beholder også nullverdier.
+    """
+    df2 = df[
+        (df['datatype'] == datatype) &
+        (df['referenceTimestamp'] == selected_date)
+    ].copy()
 
-# --- Streamlit-app ---
-st.title("Været i januar 2025")
+    # Skaler verdier for heatmap – viktig å ta med nuller!
+    df2['scaled_value'] = df2[VALUE] * 10
+    return df2
 
-# --- Velg datatype ---
-datatypes = df["datatype"].unique()
-datatype = st.selectbox("Velg datatype", datatypes)
+def interpolate_data(df, grid_res=200):
+    """
+    Interpolerer måledata over et grid ved hjelp av scipy.griddata.
+    Fjerner NaN før interpolasjon. Returnerer interpolert DataFrame.
+    """
+    # Fjern rader med NaN i nødvendige kolonner før interpolasjon
+    df_clean = df.dropna(subset=[LON, LAT, 'scaled_value'])
 
-# --- Velg dager ---
-dates = df["referenceTimestamp"].unique()
-date = st.slider("Velg dager", min_value=0, max_value=len(dates)-1, value=0)
-selected_date = dates[date]
+    if len(df_clean) < 3:
+        return df_clean  # For få punkter til interpolasjon
 
-# --- Filtrer data ---
-filtered_df = df[(df["datatype"] == datatype) & (df["referenceTimestamp"] == selected_date)]
-filtered_df = filtered_df[filtered_df["value"] > 0]
-filtered_df["scaled_value"] = filtered_df["value"] * 10  # eller mer
+    grid_lon = np.linspace(df_clean[LON].min(), df_clean[LON].max(), grid_res)
+    grid_lat = np.linspace(df_clean[LAT].min(), df_clean[LAT].max(), grid_res)
+    grid_x, grid_y = np.meshgrid(grid_lon, grid_lat)
 
+    points = df_clean[[LON, LAT]].values
+    values = df_clean['scaled_value'].values
+    grid_z = griddata(points, values, (grid_x, grid_y), method='cubic')
 
-# --- kartstil ---
-map_style = f"mapbox://styles/mapbox/light-v9?access_token={MAPBOX_TOKEN}"
+    interp_df = pd.DataFrame({
+        LON: grid_x.flatten(),
+        LAT: grid_y.flatten(),
+        'scaled_value': grid_z.flatten()
+    }).dropna()
 
-# --- Lag heatmap ---
-view_state = pdk.ViewState(
-    latitude=filtered_df[LAT].mean(),
-    longitude=filtered_df[LON].mean(),
-    zoom=6,
-    pitch=0,
-    bearing=0
-)
+    return interp_df
 
-layer = pdk.Layer(
-    "HeatmapLayer",
-    filtered_df,
-    pickable=True,
-    opacity=0.8,
-    radius_scale=100,
-    radius_min_pixels=10,
-    radius_max_pixels=100,
-    get_lat=LAT,
-    get_lng=LON,
-    get_weight=VALUE
-)
+def make_map(df, radius, intensity, threshold):
+    """
+    Genererer et pydeck heatmap for gitt DataFrame og parametere.
+    """
+    if df.empty:
+        st.warning("Ingen data tilgjengelig for valgt kombinasjon.")
+        return None
 
-r = pdk.Deck(
-    layers=[layer],
-    initial_view_state=view_state,
-    map_style=map_style
-)
+    view_state = pdk.ViewState(
+        latitude=df[LAT].mean(),
+        longitude=df[LON].mean(),
+        zoom=6,
+        pitch=0
+    )
 
-st.pydeck_chart(r)
+    layer = pdk.Layer(
+        "HeatmapLayer",
+        data=df,
+        get_position=[LON, LAT],
+        get_weight="scaled_value",
+        radiusPixels=radius,
+        intensity=intensity,
+        threshold=threshold,
+        aggregation='MEAN',
+        opacity=0.8
+    )
 
-# --- Velg målingstype og dato hardkodet her (kan gjøres dynamisk hvis ønsket) ---
-selected_type = "max(surface_air_pressure P1D)"           # eller "pressure", "temp" osv.
-selected_date = "2025-01-15"     # ISO-format
+    return pdk.Deck(
+        layers=[layer],
+        initial_view_state=view_state,
+        map_style=MAP_STYLE
+    )
 
-df_sel = df[
-    (df["datatype"] == selected_type) &
-    (df["referenceTimestamp"] == selected_date)
-]
+# ----------------------------------------------------------------------------
+# HOVEDPROGRAM
+# ----------------------------------------------------------------------------
 
-# --- Opprett heatmap-laget ---
-mid_lon = df_sel[LON].mean()
-mid_lat = df_sel[LAT].mean()
+st.title("🌦️ Været i januar 2025 – Interpolert heatmap over hele landet")
 
-# HeatmapLayer med justerte parametere
-layer = pdk.Layer(
-    "HeatmapLayer",
-    data=filtered_df,
-    get_position=[LON, LAT],
-    get_weight="scaled_value",
-    radiusPixels=70,       
-    intensity=2,           # Standard er 1, men du kan prøve f.eks. 2
-    threshold=0.06,        # Gjør kartet mer sensitivt (default 0.03)
-    aggregation='MEAN',   # Eller 'SUM', avhenger av hva du ønsker
-    opacity=0.9
-)
+# 1) Last inn data
+_df = load_data(DATA_DIR)
 
-view_state = pdk.ViewState(
-    longitude=mid_lon,
-    latitude=mid_lat,
-    zoom=7,
-    pitch=0,
-)
+# 2) Velg datatype
+available_types = sorted(_df['datatype'].unique())
+datatype = st.selectbox("Velg værtype", available_types)
 
-deck = pdk.Deck(
-    layers=[layer],
-    initial_view_state=view_state,
-    map_style=map_style,  # Bruk riktig map_style med nøkkel
-)
+# 3) Bla mellom dager med piltaster
+dates = sorted(_df['referenceTimestamp'].unique())
+selected_index = st.number_input("Bla gjennom dager", min_value=0, max_value=len(dates)-1, value=0, step=1)
+selected_date = dates[selected_index]
+st.write(f"📅 Valgt dato: {selected_date}")
 
-# Gir oversikt over datamengde og innhold
-st.write("Antall rader i data:", len(filtered_df))
-st.dataframe(filtered_df.head())
+# 4) Justerbare heatmap-innstillinger
+st.sidebar.header("🔧 Heatmap-innstillinger")
+radius    = st.sidebar.slider("Radius (pixels)",  10, 200, 70)
+intensity = st.sidebar.slider("Intensity",        0.1, 5.0, 0.5)
+threshold = st.sidebar.slider("Threshold",        0.0, 1.0, 0.05)
 
-# Gir oversikt over values
-st.write(filtered_df["value"].describe())
-st.write("Antall NaN:", filtered_df["value"].isna().sum())
+# 5) Filtrer og interpoler data
+filtered_df = filter_data(_df, datatype, selected_date)
+interp_df = interpolate_data(filtered_df)
 
+# 6) Generer og vis kart
+deck = make_map(interp_df, radius, intensity, threshold)
+if deck:
+    st.pydeck_chart(deck)
 
+# 7) Detaljer og eksport
+with st.expander("📊 Vis rådata og statistikk"):
+    st.write("Antall opprinnelige datapunkter:", len(filtered_df))
+    st.dataframe(filtered_df[[LAT, LON, VALUE]].head())
+    st.write(filtered_df[VALUE].describe())
+    st.write("Antall interpolerte punkter:", len(interp_df))
 
-# --- Skriv ut til HTML ---
-deck.to_html(
-    OUTFILE,
-    open_browser=False       # Ikke åpne automatisk
-)
-
-print(f"Generert HTML-side: {OUTFILE}")
+if deck and st.button("💾 Eksporter heatmap til HTML"):
+    deck.to_html(OUTFILE, open_browser=False)
+    st.success(f"Heatmap lagret som {OUTFILE}")
