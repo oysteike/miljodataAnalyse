@@ -1,21 +1,18 @@
-Hei
-Dette er Gruppeprosjektet
+# Prosjekt
+Denne aplikasjonen henter inn data fra frost.met.no og visualiserer dem i et kart samt bruker dataene til å predikere oppførsle frem i tid. 
 
-Ideer:
--Hvor er det gunstig å dyrke avling
-    -Ekstremvær, temp, nedbør...
+# Nødvendige pakker
+Under er er en liste over hvilke python-pakker som må installeres for å kjøre filene i prosjektet. 
+    isodate
+    matplotlib
+    numpy
+    pandas
+    pydeck
+    requests
+    scikit-learn
+    scipy
+    streamlit
 
--Kraft produskjon (fornybar)
-    -Vind, nedbør, sol...
-    -Hvor ødelegger ekstremvær mulighet for bygging.
-
--Helse analyse, fiskevellferd
-    -Luftkvalitet, vannkvalitet
-    -Praktisk for prediktiv analyse
-    -Kjelldyr vs pH i vann.
-
--Hvordan må dyr og mennesker flyttes seg som konsekvens av klimaendringer?
-    -Tørkeareal
-    -Tempraturstigning
-
+Last inn pakkene ved å kjøre dette i terminal:
+"pip install isodate matplotlib numpy pandas pydeck requests scikit-learn scipy streamlit"
 
