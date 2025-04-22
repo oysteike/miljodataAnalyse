@@ -9,18 +9,18 @@ from data_processing import process_weather_data
 
 
 """
-This class fetches weather data fra frost.met.no and saves as csv
-We mada a class to make it easier to test and ajust the code for reuse
-init for all parameters needed
-fetch_data to get data from frost.met.no, using requests
-process_data to adjust the data to a better format
-save_to_csv to save the data as csv with pandas DataFrame
-run to run the whole process
+Denne klassen henter værdata fra frost.met.no og lagrer som csv
+Vi laget en klasse for å gjøre det enklere å teste og justere koden for gjenbruk
+init for alle nødvendige parametere
+fetch_data for å hente data fra frost.met.no, ved bruk av requests
+process_data for å tilpasse dataene til et bedre format
+save_to_csv for å lagre dataene som csv med pandas DataFrame
+run for å kjøre hele prosessen
 """
 class FrostDataFetcher:
     def __init__(self, client_id, source_id, elements, ref_time, output_filename="met_data.csv", stationsdata_path=None):
         """
-        All variables expected to pull data from frost.met.no
+        Alle variabler som trengs for å hente data fra frost.met.no
         """
         self.client_id = client_id
         self.source_id = source_id
@@ -32,60 +32,60 @@ class FrostDataFetcher:
             'elements': elements,
             'referencetime': ref_time,
         }
-        self.output_filename = output_filename # Filename to save data as csv
-        self.stationsdata_path = stationsdata_path # Path to stationsdata.csv, if needed
+        self.output_filename = output_filename # Filnavn for å lagre data som csv
+        self.stationsdata_path = stationsdata_path # Sti til stationsdata.csv, hvis nødvendig
     
     def fetch_data(self):
-        response = requests.get(self.endpoint, self.parameters, auth=(self.client_id, '')) # Pulls data from frost.met.no
+        response = requests.get(self.endpoint, self.parameters, auth=(self.client_id, '')) # Henter data fra frost.met.no
         
-        if response.status_code == 200: # If the pull is successful
-            json_data = response.json() # Convert to json
-            print('Data retrieved from frost.met.no!')
+        if response.status_code == 200: # Hvis henting er vellykket
+            json_data = response.json() # Konverter til json
+            print('Data hentet fra frost.met.no!')
             return json_data['data']
         
         else:
-            print(f'Error! Returned status code {response.status_code}')
-            print(f'Message: {response.json()["error"]["message"]}') # Use built in error message
-            print(f'Reason: {response.json()["error"]["reason"]}')
+            print(f'Feil! Returnerte statuskode {response.status_code}')
+            print(f'Melding: {response.json()["error"]["message"]}') # Bruk innebygd feilmelding
+            print(f'Årsak: {response.json()["error"]["reason"]}')
             return None
     
     def process_data(self, data):
         """
-        Process the data to a better format
+        Tilpasser dataene til et bedre format
         """
         try:
             df = pd.json_normalize(data)
             #print(df.iloc[1, 2])
             #print(df.head())
-            #print(f"Data contains {len(df)} rows and {len(df.columns)} columns.")
-            #print(f"Data types:\n{df.dtypes}")
-            #print(f"Missing values:\n{df.isnull().sum()}")
+            #print(f"Data inneholder {len(df)} rader og {len(df.columns)} kolonner.")
+            #print(f"Datatyper:\n{df.dtypes}")
+            #print(f"Manglende verdier:\n{df.isnull().sum()}")
         except Exception as e:
-            print(f"Error when converting data to DataFrame: {e}")
+            print(f"Feil ved konvertering av data til DataFrame: {e}")
             return None
-        df = process_weather_data(df, self.stationsdata_path) # Call the function to process the data
+        df = process_weather_data(df, self.stationsdata_path) # Kall funksjonen for å behandle dataene
         return df
     
     def save_to_csv(self, df):
         try:
 
             output_path = os.path.join(os.getcwd(), "data", self.output_filename)
-            df.to_csv(output_path, index=False, encoding="utf-8") # Save as csv with path
-            print(f"Data saved as CSV at {output_path}")
+            df.to_csv(output_path, index=False, encoding="utf-8") # Lagre som csv med sti
+            print(f"Data lagret som CSV på {output_path}")
 
-        except Exception as e: # If error occurs during saving
-            print(f"Error when saving as CSV-file: {e}")
+        except Exception as e: # Hvis feil oppstår under lagring
+            print(f"Feil ved lagring som CSV-fil: {e}")
     
-    def run(self): # Own method to run the whole process
+    def run(self): # Egen metode for å kjøre hele prosessen
         data = self.fetch_data()
         if data:
             df = self.process_data(data)
             if df is not None:
                 self.save_to_csv(df)
             else:
-                print("Error processing data")
+                print("Feil ved behandling av data")
         else:
-            print("No data to process")
+            print("Ingen data å behandle")
 
 
 if __name__ == "__main__":
@@ -130,7 +130,7 @@ if __name__ == "__main__":
                     element, 
                     "2025-01-01/2025-02-01",
                     output_filename=f"Jan_2025/{element}_{station_name}.csv",
-                    stationsdata_path=stationsdata_path # Path to stationsdata.csv
+                    stationsdata_path=stationsdata_path # Sti til stationsdata.csv
                 )
                 fetch.run()
-    
+
