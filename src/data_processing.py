@@ -5,6 +5,11 @@ from sklearn.linear_model import LinearRegression
 from datetime import timedelta
 import isodate
 
+"""
+Denne metoden renser og prosesserer værdata fra frost.met.no.
+Dette er for å forbrede dataene for lagring i csv og videre analyse.
+"""
+
 def clean_columns(df):
     """
     Ekspanderer observations-kolonnen og trekker ut relevante felter.

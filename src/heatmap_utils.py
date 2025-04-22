@@ -9,6 +9,12 @@ import matplotlib as mpl
 from io import BytesIO
 import pydeck as pdk
 
+"""
+Denne metodne leser inn data fra CSV-filer, filtrerer og interpolerer dem,
+og lager et heatmap ved hjelp av pydeck.
+Den bruker også matplotlib for å lage en legende for nedbørverdier.
+"""
+
 # Konstantnavn for kolonner brukt i datasettet
 TIMESTAMP   = "referenceTimestamp"
 LON         = "lon"
