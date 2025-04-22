@@ -1,82 +1,152 @@
-import unittest
-import sys, os
-import pandas as pd
-
-
+import os
+import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src')))
+from data_processing import clean_columns, preprocess_dataframe, remove_outliers, resample_and_aggregate, fill_missing_values, add_station_metadata
 
-from data_processing import csv_reader
-from data_processing import get_values
-
+import unittest
 from io import StringIO
+import pandas as pd
+import numpy as np
+from datetime import datetime, timedelta
+from scipy.stats import zscore
+from sklearn.linear_model import LinearRegression
+from datetime import timedelta
+import isodate
 
 
-class Test_file_processing(unittest.TestCase):
-    def setUp(self):
-        # Lag en dummy CSV-streng
-        self.csv_data = StringIO(
-            "temperature,20,C,,PT1H,1,,0,,station1,2025-01-01T00:00:00Z\n"
-            "temperature,21,C,,PT1H,1,,0,,station1,2025-01-01T01:00:00Z\n"
-            "temperature,,C,,PT1H,1,,0,,station1,2025-01-02T02:00:00Z\n"
-            "temperature,5000,C,,PT1H,1,,0,,station1,2025-01-02T03:00:00Z\n"
-            "temperature,15,C,,PT1H,1,,0,,station1,2025-01-03T10:00:00Z\n"
-            "temperature, 17,C,,PT1H,1,,0,,station1,2025-01-03T13:00:00Z\n"
-            "precipitation_amount,1.0,mm,,PT1H,1,,0,,station1,2025-01-01T00:00:00Z\n"
-        )
-        
-        # Midlertidig fil
-        self.temp_filename = "temp_test.csv"
-        with open(self.temp_filename, 'w') as f:
-            f.write(self.csv_data.getvalue())
+class TestWeatherDataProcessor(unittest.TestCase):
 
-        self.mock_data = pd.DataFrame({
-            'referenceTimestamp': pd.to_datetime([
-            '2024-01-01T00:00:00Z', '2024-01-02T00:00:00Z', '2024-01-03T00:00:00Z', '2024-01-04T00:00:00Z'
-            ]),
-            'datatype': ['temperature', 'temperature', 'temperature','temperature'],
-            'value': [20.0, 15.0, 21.0, 17.0],
-            'unit': ['C', 'C', 'C', 'C'],
-            'station': ['Station1', 'Station1', 'Station1', 'Station1']
-            })
+    def test_clean_columns(self):
+        # Opprett en test dataframe
+        data = {
+            'sourceId': ['id1', 'id2'],
+            'referenceTime': ['2022-01-01T00:00:00', '2022-01-02T00:00:00'],
+            'observations': [
+                [
+                    {'timeOffset': 'PT1H', 'elementId': 'temp', 'value': 10, 'unit': 'C'},
+                    {'timeOffset': 'PT2H', 'elementId': 'temp', 'value': 12, 'unit': 'C'}
+                ],
+                [
+                    {'timeOffset': 'PT1H', 'elementId': 'temp', 'value': 15, 'unit': 'C'},
+                    {'timeOffset': 'PT2H', 'elementId': 'temp', 'value': 18, 'unit': 'C'}
+                ]
+            ]
+        }
+        df = pd.DataFrame(data)
 
-    def tearDown(self):
-        # Slett midlertidig fil
-        os.remove(self.temp_filename)
+        # Kjør funksjonen
+        result = clean_columns(df)
 
-    def test_csv_reader_basic_functionality(self):
-        datatyper = ['temperature', 'precipitation_amount']
-        result = csv_reader(self.temp_filename, datatyper)
+        # Sjekk at resultatet er korrekt
+        self.assertEqual(len(result), 4)
+        self.assertEqual(result['sourceId'].nunique(), 2)
+        self.assertEqual(result['datatype'].nunique(), 1)
+        self.assertEqual(result['unit'].nunique(), 1)
 
-        # Sjekk at resultatet er en DataFrame
-        self.assertIsInstance(result, pd.DataFrame)
+    def test_preprocess_dataframe(self):
+        # Opprett en test dataframe
+        data = {
+            'sourceId': ['id1', 'id2'],
+            'referenceTimestamp': ['2022-01-01T00:00:00', '2022-01-02T00:00:00'],
+            'datatype': ['temp', 'temp'],
+            'value': ['10', '15'],
+            'unit': ['C', 'C']
+        }
+        df = pd.DataFrame(data)
 
-        #Sjekk at kolonnene er som forventet
-        expected_columns = ['referenceTimestamp', 'datatype', 'value', 'unit', 'station']
-        self.assertTrue(all(col in result.columns for col in expected_columns))
+        # Kjør funksjonen
+        result = preprocess_dataframe(df)
 
-        # Sjekk at det er ingen NaN-verdier i 'value' kolonnen
-        self.assertFalse(result['value'].isnull().any())
+        # Sjekk at resultatet er korrekt
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result['value'].dtype, 'int64')
 
-        # Sjekk at det det er daglige verdier
-        self.assertEqual(result['referenceTimestamp'].dt.date.nunique(), len(result))
+    def test_remove_outliers(self):
+    # Create test data
+        data = {
+        'sourceId': ['A', 'A', 'A'],
+        'referenceTimestamp': ['2022-01-01T00:00:00', '2022-01-01T00:00:00', '2022-01-01T00:00:00'],
+        'datatype': ['temperature', 'temperature', 'temperature'],
+        'value': [10,20, np.nan],
+        'unit': ['°C', '°C', '°C']
+        }
+        df = pd.DataFrame(data)
 
-        # Sjekk at 'datatype' kolonnen inneholder de forventede datatypene
-        expected_datatypes = ['temperature', 'precipitation_amount']
-        self.assertTrue(all(dt in expected_datatypes for dt in result['datatype'].unique()))
+        # Kjør funksjonen
+        df = remove_outliers(df)
 
-        # Sjekk at stort avvik er fjernet
-        self.assertTrue((result['value'] < 1000).all())
+        # Sjekk resultatet
+        self.assertTrue(df['value'].isna().any())
 
-        
-    def test_get_values_within_range(self):
+    def test_resample_and_aggregate(self):
+        # Create test data
+        data = {
+        'sourceId': ['A', 'A', 'A'],
+        'referenceTimestamp': ['2022-01-01T00:00:00', '2022-01-01T01:00:00', '2022-01-02T00:00:00'],
+        'datatype': ['temperature', 'temperature', 'temperature'],
+        'value': [10,20,30],
+        'unit': ['°C', '°C', '°C']
+        }
+        df = pd.DataFrame(data)
 
-        start_time = "2024-01-01"
-        end_time = "2024-01-02"
+        # Kjør funksjonen
+        df['referenceTimestamp'] = pd.to_datetime(df['referenceTimestamp']) # Konverter til datetime
+        df = resample_and_aggregate(df)
 
-        result = get_values(self.mock_data, start_time, end_time)
+        # Sjekk resultatet
+        self.assertEqual(df.shape[0],2)
 
-        self.assertEqual(result, [20.0,15.0])
+    def test_fill_missing_values(self):
+        # Create test data
+        data = {
+        'sourceId': ['A', 'A'],
+        'referenceTimestamp': [pd.Timestamp('2022-01-01 00:00:00'), pd.Timestamp('2022-01-02 00:00:00')],
+        'datatype': ['temperature', 'temperature'],
+        'value': [10, np.nan],
+        'unit': ['°C', '°C']
+        }
+        df = pd.DataFrame(data)
 
+        # Kjør funksjonen
+        df = fill_missing_values(df)
+
+        # Sjekk resultatet
+        self.assertFalse(df['value'].isna().any())
+
+    def test_add_station_metadata(self):
+        # Opprett en test dataframe
+        data = {
+            'sourceId': ['id1', 'id1'],
+            'referenceTimestamp': ['2022-01-01T00:00:00', '2022-01-01T12:00:00'],
+            'datatype': ['temp', 'temp'],
+            'value': [10, 12],
+            'unit': ['C', 'C']
+        }
+        df = pd.DataFrame(data)
+
+        # Opprett en test metadata dataframe
+        metadata_data = {
+            'source_id': ['id1'],
+            'station_name': ['Stasjon 1'],
+            'lon': [10.0],
+            'lat': [60.0]
+        }
+        metadata = pd.DataFrame(metadata_data)
+
+        # Kjør funksjonen
+        result = add_station_metadata(df, 'metadata.csv')
+        metadata.to_csv('metadata.csv', index=False)
+        result = add_station_metadata(df, 'metadata.csv')
+
+        # Sjekk at resultatet er korrekt
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result['station_name'].nunique(), 1)
+        self.assertEqual(result['lon'].nunique(), 1)
+        self.assertEqual(result['lat'].nunique(), 1)
+
+        # Fjern metadata filen
+        import os
+        os.remove('metadata.csv')
 
 if __name__ == '__main__':
     unittest.main()
