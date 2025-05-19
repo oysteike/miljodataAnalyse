@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
         else:
             elements = [
-                "sum(precipitation_amount P1D)",
+                "mean(air_temperature P1M)",
             ]
             
             source_id_total = ",".join(stations_df['source_id'].unique().astype(str))
@@ -128,8 +128,8 @@ if __name__ == "__main__":
                     client_id,
                     source_id_total,
                     element, 
-                    "2025-01-01/2025-02-01",
-                    output_filename=f"Jan_2025/{element}_{station_name}.csv",
+                    "2015-01-01/2025-05-19",
+                    output_filename=f"temperature_since_2015/{station_name}.csv",
                     stationsdata_path=stationsdata_path # Sti til stationsdata.csv
                 )
                 fetch.run()
