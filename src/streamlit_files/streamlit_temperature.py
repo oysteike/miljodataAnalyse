@@ -1,8 +1,10 @@
 import streamlit as st
 import os
+import sys
 import matplotlib.pyplot as plt
 import pandas as pd
-from temperature_calculations import analyze_temperature_progress
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src')))
+from processing.temperature_calculations import analyze_temperature_progress
 
 def show():
     st.title("Temperaturutvikling i Norge")

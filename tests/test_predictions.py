@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src')))
-from predictions import predict_from_csv, read_csv_data, resample_and_engineer_features, train_linear_model, create_forecast
+from processing.predictions import predict_from_csv, read_csv_data, resample_and_engineer_features, train_linear_model, create_forecast
 
 class TestPredictions(unittest.TestCase):
     def setUp(self):

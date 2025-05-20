@@ -5,7 +5,7 @@ import sys
 
 modul_path = os.path.join(os.getcwd(), "src")
 sys.path.append(modul_path)
-from data_processing import process_weather_data
+from processing.transform_data import process_weather_data
 
 
 """

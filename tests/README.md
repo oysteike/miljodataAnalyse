@@ -20,10 +20,6 @@ Tester funksjoner for databehandling som rensing, resampling og fylling av mangl
    ```bash
    python -m unittest discover -s tests -p "*.py"
    ```
-
-## Struktur
-
-- **`src/`**: Kildekode.
-- **`tests/`**: Testfiler.
+   
 
 Legg til nye tester ved å opprette en fil i `tests/` og følge eksisterende struktur.

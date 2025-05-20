@@ -1,8 +1,10 @@
 import streamlit as st
 import os
+import sys
 import pandas as pd
 import matplotlib.pyplot as plt
-from predictions import predict_from_csv
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src')))
+from processing.predictions import predict_from_csv
 
 def show():
     st.title("Fremtidsprediksjon basert på værdata")

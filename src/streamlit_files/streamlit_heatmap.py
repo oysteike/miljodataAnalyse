@@ -1,6 +1,8 @@
 import streamlit as st
 import os
-from heatmap_utils import load_data, filter_data, interpolate_data, make_map, plot_legend
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src')))
+from processing.heatmap_utils import load_data, filter_data, interpolate_data, make_map, plot_legend
 
 def show():
     st.title("Interpolert heatmap for nedbør i januar 2025")
