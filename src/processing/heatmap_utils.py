@@ -136,14 +136,20 @@ def make_map(df, radius, intensity, threshold):
         map_style=MAP_STYLE
     )
 
-def plot_legend(min_val, max_val):
+def plot_legend(min_val, max_val, datatype="nedbør"):
     """
-    Lager en fargeskala/legende for nedbørverdier.
+    Lager en fargeskala/legende for nedbør- eller vindverdier.
     Returnerer som bilde i minnet (BytesIO).
     """
     from matplotlib.colors import LinearSegmentedColormap
 
-    colors = ["white", "yellow", "red"]  # Fargeskala
+    if datatype.lower() == "vind":
+        colors = ["white", "lightblue", "blue", "navy"]  # Vind: blåskala
+        label = "Vind (m/s)"
+    else:
+        colors = ["white", "yellow", "red"]  # Nedbør: gul-rød
+        label = "Nedbør (mm)"
+
     cmap = LinearSegmentedColormap.from_list("custom_heat", colors)
 
     fig, ax = plt.subplots(figsize=(6, 0.5))
@@ -155,10 +161,36 @@ def plot_legend(min_val, max_val):
         norm=norm,
         orientation='horizontal'
     )
-    cb.set_label('Nedbør (mm)')
+    cb.set_label(label)
 
     buf = BytesIO()
     plt.savefig(buf, format="png", dpi=150, bbox_inches='tight', transparent=True)
     buf.seek(0)
     plt.close(fig)
     return buf
+
+def get_colormap(datatype):
+    """
+    Returnerer en matplotlib colormap basert på datatype.
+    """
+    from matplotlib.colors import LinearSegmentedColormap
+    if datatype.lower() == "vind":
+        return LinearSegmentedColormap.from_list("wind_heat", ["white", "lightblue", "blue", "navy"])
+    else:
+        return LinearSegmentedColormap.from_list("rain_heat", ["white", "yellow", "red"])
+
+def plot_colorbar_for_map(min_val, max_val, datatype="nedbør"):
+    """
+    Lager og viser en colorbar for bruk sammen med pydeck heatmap.
+    """
+    cmap = get_colormap(datatype)
+    fig, ax = plt.subplots(figsize=(6, 0.5))
+    fig.subplots_adjust(bottom=0.5)
+    norm = mpl.colors.Normalize(vmin=min_val, vmax=max_val)
+    cb = mpl.colorbar.ColorbarBase(
+        ax, cmap=cmap,
+        norm=norm,
+        orientation='horizontal'
+    )
+    cb.set_label("Vind (m/s)" if datatype.lower() == "vind" else "Nedbør (mm)")
+    plt.show()

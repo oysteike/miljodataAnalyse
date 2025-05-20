@@ -35,8 +35,10 @@ def show():
     if not filtered_df.empty:
         min_val = filtered_df["value"].min()
         st.subheader("Fargeskala")
-        st.write(f"Verdier: {min_val:.1f} mm – {max_value:.1f} mm")
-        legend = plot_legend(min_val, max_value)
+        unit = "m/s" if datatype.lower() == "vind" else "mm"
+        st.write(f"Verdier: {min_val:.1f} {unit} – {max_value:.1f} {unit}")
+        legend = plot_legend(min_val, max_value, datatype)
+
         st.image(legend)
 
     with st.expander("Rådata og statistikk"):
