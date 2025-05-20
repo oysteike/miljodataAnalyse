@@ -4,6 +4,7 @@ import os
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
+import inspect
 
 # 🔁 Legg til src/ i path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -11,18 +12,34 @@ src_path = os.path.join(current_dir, "src")
 sys.path.append(src_path)
 
 # 🔁 Importer moduler
-from heatmap_utils import (
-    load_data, filter_data, interpolate_data,
-    make_map, plot_legend
-)
+from heatmap_utils import load_data, filter_data, interpolate_data, make_map, plot_legend
 from predictions import predict_from_csv
+from temperature_calculations import analyze_temperature_progress
 
 # 🔀 Menyvalg
 st.sidebar.title("Navigasjon")
-valg = st.sidebar.radio("Velg funksjon:", ["🌦️ Interpolert heatmap", "📈 Fremtidsprediksjon"])
+valg = st.sidebar.radio("Velg funksjon:", ["Hjem", "🌦️ Interpolert heatmap", "📈 Fremtidsprediksjon", "🌡️ Temperaturendringer"])
+
+# === HOMEPAGE ===
+if valg == "Hjem":
+    st.title("🌦️ Værdata og prediksjoner")
+    st.write("Velg en funksjon fra menyen til venstre for å begynne.")
+    st.markdown("""
+    ### Hva viser denne appen?
+
+    I denne applikasjonen kan du utforske datasettet og se ulike innsikter, blant annet:
+
+    - **Visualiseringer**: Heatmap, linjediagram og skatterplot for å se trender og mønstre i værdata i Norge.
+    - **Prediksjoner**: Forutsi fremtidige værforhold basert på historiske data.
+    - **Filtrering**: Mulighet for å filtrere data på tvers av ulike kategorier.
+    - **Interaktive komponenter**: Velg hvilke variabler du vil analysere, og se resultatene oppdatere seg dynamisk.
+    - **Oversikt over nøkkeltall**: Gjennomsnitt, median, standardavvik m.m.
+
+    Denne appliikasjonen har som mål å gi deg et godt grunnlag for å forstå strukturen i værdataene og identifisere mønstre eller avvik. 
+    """)
 
 # === 🌦️ HEATMAP DEL ===
-if valg == "🌦️ Interpolert heatmap":
+elif valg == "🌦️ Interpolert heatmap":
     st.title("🌦️ Nedbør i januar 2025 – Interpolert heatmap")
 
     DATA_DIR = os.path.join(current_dir, 'data', 'Jan_2025')
@@ -101,3 +118,53 @@ elif valg == "📈 Fremtidsprediksjon":
 
     except Exception as e:
         st.error(f"Kunne ikke beregne prediksjon: {e}")
+
+
+# === 🌡️ TEMPERATURBEREGNINGER ===
+elif valg == "🌡️ Temperaturendringer":
+    st.title("🌡️ Temperaturendringer")
+    DATA_DIR = os.path.join(current_dir, "data", "temperature_since_2015")
+
+    target = 1.5  # Parisavtalens mål for global oppvarming innen 2030
+    
+    df, progress, reduction_per_year = analyze_temperature_progress(DATA_DIR)
+    st.subheader("Analyser temperaturutvikling")
+    st.write("Her kan du se hvordan temperaturen har utviklet seg i Norge de siste årene. En modell med ønske om å vekke oppmerksomhet rundt temperaturutviklingen i Norge og hvordan den kan sammenlignes med Parisavtalens mål om 1.5°C global oppvarming innen 2030. Her sammenlignes altså temperaturen i Norge med det snittet vi hadde i perioden 1990-2000.")
+    st.write(f"År: {progress['latest_year']}")
+    st.write(f"Temperaturavvik dette året: {progress['latest_anomaly']:.2f}°C")
+    st.write(f"Avvik fra mål: {progress['overshoot']:.2f}°C")
+    st.write(f"Er på rett spor? {'Ja' if progress['on_track'] else 'Nei'}")
+    st.write(f"Nødvendig reduksjon per år for å nå målet: {reduction_per_year:.2f}°C")
+
+    st.subheader("Temperaturavvik fra normal siden parisavtalen, i henhold til normale verdier fra 1963-1990")
+
+
+    # === 1. Plot med månedlige verdier ===
+    fig1, ax1 = plt.subplots(figsize=(12, 6))
+    ax1.scatter(df['referenceTimestamp'], df['anomaly'], color='blue', alpha=0.6, label='Snittemperatur (månedlig)')
+    ax1.axhline(y=target, color='red', linestyle='--', label=f'Mål: {target}°C')
+    ax1.set_title("Månedlig temperaturavvik i Norge (alle stasjoner kombinert)")
+    ax1.set_xlabel("År")
+    ax1.set_ylabel("Avvik fra normal (°C)")
+    ax1.legend()
+    ax1.grid(True)
+
+    st.pyplot(fig1)
+
+    # === 2. Plot med årlige gjennomsnitt ===
+    # Beregn årlig gjennomsnitt først
+    df['year'] = df['referenceTimestamp'].dt.year
+    annual_df = df.groupby('year')['anomaly'].mean().reset_index()
+
+    fig2, ax2 = plt.subplots(figsize=(12, 6))
+    ax2.scatter(annual_df['year'], annual_df['anomaly'], color='green', alpha=0.8, label='Snittemperatur (årlig)')
+    ax2.axhline(y=target, color='red', linestyle='--', label=f'Mål: {target}°C')
+    ax2.set_title("Årlig temperaturavvik i Norge")
+    ax2.set_xlabel("År")
+    ax2.set_ylabel("Avvik fra normal (°C)")
+    ax2.legend()
+    ax2.grid(True)
+
+    st.pyplot(fig2)
+
+    st.write("NB! Denne analysen er så forenklet at den ikke er egnet for å trekke konklusjoner om klimaendringer. Justeringer i temperatur må ses i en større sammenheng enn kun målinger fra enkelte måneder i enkelte land. Dette er kun med på å illustrere hvordan en slik analyse kan gjøres.")
