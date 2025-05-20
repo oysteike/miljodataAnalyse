@@ -95,7 +95,6 @@ def analyze_temperature_progress(TEMPERATURE_DIR):
         return None, None, None
 
     monthly_anomalies = calculate_monthly_anomalies(df)
-    print(monthly_anomalies.head())
     
     annual_anomaly, progress = assess_annual_progress(monthly_anomalies)
     reduction_per_year = required_reduction(annual_anomaly)

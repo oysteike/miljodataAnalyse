@@ -168,3 +168,4 @@ elif valg == "🌡️ Temperaturendringer":
     st.pyplot(fig2)
 
     st.write("NB! Denne analysen er så forenklet at den ikke er egnet for å trekke konklusjoner om klimaendringer. Justeringer i temperatur må ses i en større sammenheng enn kun målinger fra enkelte måneder i enkelte land. Dette er kun med på å illustrere hvordan en slik analyse kan gjøres.")
+    
