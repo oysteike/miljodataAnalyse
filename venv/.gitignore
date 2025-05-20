@@ -1,4 +1,14 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
+# Python cache
 __pycache__/
+*.pyc
+
+# Streamlit HTML-eksport
+*.html
+
+# IDE-filer
+.vscode/
+*.code-workspace
+
+# Virtual environments
 venv/
-weather_map.html
+.env/
