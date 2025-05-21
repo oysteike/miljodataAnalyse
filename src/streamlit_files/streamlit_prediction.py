@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src')))
 from processing.predictions import predict_from_csv
 
 def show():
-    st.title("Fremtidsprediksjon basert på værdata")
+    st.title("Fremtidsprediksjon basert på historisk data")
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(current_dir, '..', '..', 'data', 'oslo_2015-2025')
@@ -21,7 +21,7 @@ def show():
     file_path = os.path.join(data_dir, selected_file)
 
     freq = st.selectbox("Frekvens", options=["W", "MS"], index=1)
-    periods = st.slider("Antall fremtidige perioder", min_value=3, max_value=36, value=12)
+    periods = st.slider("Antall fremtidige perioder", min_value=1, max_value=36, value=12)
     start_date = st.date_input("Vis historikk fra og med", pd.to_datetime("2022-01-01"))
 
     
@@ -93,7 +93,7 @@ def show():
             raw_df = raw_df[raw_df['value'].notna()]
             raw_df = raw_df.sort_values('referenceTimestamp')
 
-            # 🔽 Legg inn disse to linjene:
+            # Legg inn disse to linjene:
             original = raw_df[~raw_df['is_interpolated']]
             interpolated = raw_df[raw_df['is_interpolated']]
 

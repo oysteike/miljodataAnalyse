@@ -94,12 +94,12 @@ if __name__ == "__main__":
     source_id = "SN90450"
 
     
-    fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D)',  '2015-01-01/2025-01-01', "oslo_since_2015-2025/Precipitation.csv")
-    fetch2 = FrostDataFetcher(client_id, source_id, 'sum(duration_of_sunshine P1D)', '2015-01-01/2025-01-01', "oslo_since_2015-2025/Sunshine.csv")
-    fetch3 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "oslo_since_2015-2025/Pressure.csv")
-    fetch4 = FrostDataFetcher(client_id, source_id, 'mean(air_temperature P1D)',  '2015-01-01/2025-01-01', "oslo_since_2015-2025/Temperature.csv")
-    fetch5 = FrostDataFetcher(client_id, source_id, 'mean(wind_speed P1D)',  '2015-01-01/2025-01-01', "oslo_since_2015-2025/Wind.csv")
-    fetch6 = FrostDataFetcher(client_id, source_id, 'mean(relative_humidity P1D)',  '2015-01-01/2025-01-01', "oslo_since_2015-2025/Humidity.csv")
+    fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D)',  '2015-01-01/2025-01-01', "oslo_2015-2025/Precipitation.csv")
+    fetch2 = FrostDataFetcher(client_id, source_id, 'sum(duration_of_sunshine P1D)', '2015-01-01/2025-01-01', "oslo_2015-2025/Sunshine.csv")
+    fetch3 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "oslo_2015-2025/Pressure.csv")
+    fetch4 = FrostDataFetcher(client_id, source_id, 'mean(air_temperature P1D)',  '2015-01-01/2025-01-01', "oslo_2015-2025/Temperature.csv")
+    fetch5 = FrostDataFetcher(client_id, source_id, 'mean(wind_speed P1D)',  '2015-01-01/2025-01-01', "oslo_2015-2025/Wind.csv")
+    fetch6 = FrostDataFetcher(client_id, source_id, 'mean(relative_humidity P1D)',  '2015-01-01/2025-01-01', "oslo_2015-2025/Humidity.csv")
     fetch1.run()
     fetch2.run()
     fetch3.run()

@@ -60,37 +60,37 @@ def resample_and_aggregate(df):
 
 def fill_missing_values(df):
     """
-    Fyller manglende verdier med lineær regresjon per datatype,
+    Fyller manglende verdier med lineær interpolasjon basert på tid,
     og markerer hvilke verdier som er interpolert.
     """
-    df["is_interpolated"] = False  # Legg til kolonne, default False
+    df["is_interpolated"] = False
+
+    result = []
 
     for datatype in df['datatype'].unique():
         subset = df[df['datatype'] == datatype].copy()
         if subset.empty:
             continue
 
+        # Sorter og sett index til timestamp
         subset = subset.sort_values('referenceTimestamp')
-        subset['time_numeric'] = (subset['referenceTimestamp'] - subset['referenceTimestamp'].min()).dt.total_seconds()
+        subset.set_index('referenceTimestamp', inplace=True)
 
-        missing_mask = subset['value'].isna()
-        if missing_mask.any() and not subset['value'].isna().all():
-            reg = LinearRegression()
-            known_x = subset.loc[~missing_mask, 'time_numeric'].values.reshape(-1, 1)
-            known_y = subset.loc[~missing_mask, 'value'].values
-            reg.fit(known_x, known_y)
+        # Husk hvilke som var NaN
+        was_nan = subset['value'].isna()
 
-            pred_x = subset.loc[missing_mask, 'time_numeric'].values.reshape(-1, 1)
-            predicted_values = reg.predict(pred_x)
+        # Interpoler basert på tid
+        subset['value'] = subset['value'].interpolate(method='time', limit_direction='both')
 
-            # Sett inn verdiene og merk de som interpolert
-            subset.loc[missing_mask, 'value'] = predicted_values
-            subset.loc[missing_mask, 'is_interpolated'] = True
+        # Merk de som ble interpolert
+        subset['is_interpolated'] = was_nan & subset['value'].notna()
 
-        # Oppdater opprinnelig df med subset
-        df.update(subset.drop(columns=['time_numeric']))
+        subset.reset_index(inplace=True)
+        result.append(subset)
 
-    return df
+    return pd.concat(result, ignore_index=True)
+
+
 
 
 def add_station_metadata(df, stationsdata_path):
