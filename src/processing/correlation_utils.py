@@ -20,14 +20,7 @@ def load_data(file_path1, file_path2):
     # Slå sammen dataene basert på 'referenceTimestamp'
     merged_df = pd.merge(df1, df2, on='referenceTimestamp', suffixes=('_1', '_2'))
 
-    # Beregn forskjellen mellom de to datasettene
-    merged_df['difference'] = merged_df['value_1'] - merged_df['value_2']
-
-    return merged_df[['referenceTimestamp', 'value_1', 'value_2', 'difference']]
-
-    #except Exception as e:
-    #   return pd.DataFrame()
-
+    return merged_df[['referenceTimestamp', 'value_1', 'value_2']]
 
 def plot_weather_dashboard(df):
     """
@@ -35,7 +28,7 @@ def plot_weather_dashboard(df):
     Lager tidsserieplot, korrelasjonsanalyse og scatterplot med Plotly.
     Returnerer figurene og korrelasjonskoeffisienten.
     """
-    if df.empty or not {'referenceTimestamp', 'value_1', 'value_2', 'difference'}.issubset(df.columns):
+    if df.empty or not {'referenceTimestamp', 'value_1', 'value_2'}.issubset(df.columns):
         return None, None, None
 
     # Tidsserieplot
@@ -44,15 +37,11 @@ def plot_weather_dashboard(df):
     fig1.add_trace(go.Scatter(x=df['referenceTimestamp'], y=df['value_2'], mode='lines', name='value_2'))
     fig1.update_layout(title='Tidsserie', xaxis_title='Tid', yaxis_title='Verdi')
 
-    # Forskjell over tid
-    fig2 = px.line(df, x='referenceTimestamp', y='difference', title='Forskjell mellom value_1 og value_2')
-    fig2.update_layout(yaxis_title='Forskjell', xaxis_title='Tid')
-
     # Scatterplot
-    fig3 = px.scatter(df, x='value_1', y='value_2', title='Sammenheng mellom value_1 og value_2')
-    fig3.update_layout(xaxis_title='value_1', yaxis_title='value_2')
+    fig2 = px.scatter(df, x='value_1', y='value_2', title='Sammenheng mellom første og andre element')
+    fig2.update_layout(xaxis_title='value_1', yaxis_title='value_2')
 
-    return fig1, fig2, fig3
+    return fig1, fig2
 
 
 def calculate_correlation(df, var1='value_1', var2='value_2'):
