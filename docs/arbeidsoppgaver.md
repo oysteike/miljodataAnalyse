@@ -15,7 +15,7 @@
     Sjekke PEP 8, kommentarer og navngivning (Kodekvalitet)
     Sørge for god nok unntakshåntatering (Kodekvalitet) parameterverifisering??
     Gir forklaring på standardavik og hvordan det bruke i prosjektet. (Statistiske metoder)
-    Lage en del av nettisden hv
+    Lage en del av nettisden hvor man direkte sammenligner to/flere grafer
 
     
 Ekstraoppgaver     
@@ -25,4 +25,4 @@ Ekstraoppgaver
     
 Ref og dokumentasjon
     Mer detaljer i readmefiler. 
-    
+
