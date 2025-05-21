@@ -117,9 +117,10 @@ if __name__ == "__main__":
 
         else:
             elements = [
-                "mean(air_temperature P1M)",
+                "mean(air_temperature P1D)",
             ]
-            
+            ref_time = "2025-01-01/2025-01-31"
+            output_filename = f"Jan_2025/temperature_{station_name}.csv"
             source_id_total = ",".join(stations_df['source_id'].unique().astype(str))
 
             for element in elements:
@@ -128,9 +129,8 @@ if __name__ == "__main__":
                     client_id,
                     source_id_total,
                     element, 
-                    "2015-01-01/2025-05-19",
-                    output_filename=f"temperature_since_2015/{station_name}.csv",
+                    ref_time,
+                    output_filename,
                     stationsdata_path=stationsdata_path # Sti til stationsdata.csv
                 )
                 fetch.run()
-
