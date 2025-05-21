@@ -1,6 +1,6 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.express as px
+import plotly.graph_objects as go
 
 def load_data(file_path1, file_path2):
     """
@@ -11,8 +11,9 @@ def load_data(file_path1, file_path2):
     df1 = pd.read_csv(file_path1)
     df2 = pd.read_csv(file_path2)
 
-    df1['referenceTimestamp'] = pd.to_datetime(df1['referenceTimestamp'])
-    df2['referenceTimestamp'] = pd.to_datetime(df2['referenceTimestamp'])
+    # Gjør om verdier slik at de kan sammenlignes
+    df1['referenceTimestamp'] = pd.to_datetime(df1['referenceTimestamp']).dt.date
+    df2['referenceTimestamp'] = pd.to_datetime(df2['referenceTimestamp']).dt.date
     df1['value'] = pd.to_numeric(df1['value'])
     df2['value'] = pd.to_numeric(df2['value'])
 
@@ -27,37 +28,32 @@ def load_data(file_path1, file_path2):
     #except Exception as e:
     #   return pd.DataFrame()
 
+
 def plot_weather_dashboard(df):
     """
     Visualiserer to kolonner ('value_1' og 'value_2') fra en DataFrame returnert av load_data.
-    Lager tidsserieplot, korrelasjonsanalyse og scatterplot.
+    Lager tidsserieplot, korrelasjonsanalyse og scatterplot med Plotly.
     Returnerer figurene og korrelasjonskoeffisienten.
     """
     if df.empty or not {'referenceTimestamp', 'value_1', 'value_2', 'difference'}.issubset(df.columns):
         return None, None, None
 
     # Tidsserieplot
-    fig1, ax1 = plt.subplots()
-    ax1.plot(df['referenceTimestamp'], df['value_1'], label='value_1')
-    ax1.plot(df['referenceTimestamp'], df['value_2'], label='value_2')
-    ax1.set_xlabel('Tid')
-    ax1.set_ylabel('Verdi')
-    ax1.legend()
+    fig1 = go.Figure()
+    fig1.add_trace(go.Scatter(x=df['referenceTimestamp'], y=df['value_1'], mode='lines', name='value_1'))
+    fig1.add_trace(go.Scatter(x=df['referenceTimestamp'], y=df['value_2'], mode='lines', name='value_2'))
+    fig1.update_layout(title='Tidsserie', xaxis_title='Tid', yaxis_title='Verdi')
 
     # Forskjell over tid
-    fig2, ax2 = plt.subplots()
-    ax2.plot(df['referenceTimestamp'], df['difference'], label='Forskjell (value_1 - value_2)', color='purple')
-    ax2.set_xlabel('Tid')
-    ax2.set_ylabel('Forskjell')
-    ax2.legend()
+    fig2 = px.line(df, x='referenceTimestamp', y='difference', title='Forskjell mellom value_1 og value_2')
+    fig2.update_layout(yaxis_title='Forskjell', xaxis_title='Tid')
 
     # Scatterplot
-    fig3, ax3 = plt.subplots()
-    sns.scatterplot(x=df['value_1'], y=df['value_2'], ax=ax3)
-    ax3.set_xlabel('value_1')
-    ax3.set_ylabel('value_2')
+    fig3 = px.scatter(df, x='value_1', y='value_2', title='Sammenheng mellom value_1 og value_2')
+    fig3.update_layout(xaxis_title='value_1', yaxis_title='value_2')
 
     return fig1, fig2, fig3
+
 
 def calculate_correlation(df, var1='value_1', var2='value_2'):
     """
