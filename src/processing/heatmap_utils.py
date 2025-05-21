@@ -147,8 +147,7 @@ def plot_legend(min_val, max_val, datatype="nedbør"):
         colors = ["white", "lightblue", "blue", "navy"]  # Vind: blåskala
         label = "Vind (m/s)"
     else:
-        colors = ["white", "yellow", "red"]  # Nedbør: gul-rød
-        label = "Nedbør (mm)"
+        colors = ["white", "yellow", "red"]  # Nedbør: gul-rød"
 
     cmap = LinearSegmentedColormap.from_list("custom_heat", colors)
 
@@ -161,38 +160,9 @@ def plot_legend(min_val, max_val, datatype="nedbør"):
         norm=norm,
         orientation='horizontal'
     )
-    cb.set_label(label)
 
     buf = BytesIO()
     plt.savefig(buf, format="png", dpi=150, bbox_inches='tight', transparent=True)
     buf.seek(0)
     plt.close(fig)
     return buf
-
-def get_colormap(datatype):
-    from matplotlib.colors import LinearSegmentedColormap
-    if datatype.lower() == "temperatur":
-        # Gul -> rød ved 10 grader
-        colors = [(0.0, "yellow"), (10/30, "red"), (1.0, "darkred")]
-        return LinearSegmentedColormap.from_list("temp", [c[1] for c in colors])
-    else:
-        # Lys blå -> rød ved 10 mm nedbør
-        colors = [(0.0, "lightblue"), (10/30, "red"), (1.0, "darkred")]
-        return LinearSegmentedColormap.from_list("rain", [c[1] for c in colors])
-
-
-def plot_colorbar_for_map(min_val, max_val, datatype="nedbør"):
-    """
-    Lager og viser en colorbar for bruk sammen med pydeck heatmap.
-    """
-    cmap = get_colormap(datatype)
-    fig, ax = plt.subplots(figsize=(6, 0.5))
-    fig.subplots_adjust(bottom=0.5)
-    norm = mpl.colors.Normalize(vmin=min_val, vmax=max_val)
-    cb = mpl.colorbar.ColorbarBase(
-        ax, cmap=cmap,
-        norm=norm,
-        orientation='horizontal'
-    )
-    cb.set_label("Vind (m/s)" if datatype.lower() == "vind" else "Nedbør (mm)")
-    plt.show()
