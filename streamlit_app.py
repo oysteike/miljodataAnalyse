@@ -2,7 +2,6 @@ import streamlit as st
 import os
 import sys
 
-# Legg til src i path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, "src")
 sys.path.append(src_path)
