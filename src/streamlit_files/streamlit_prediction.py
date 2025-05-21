@@ -24,6 +24,7 @@ def show():
     periods = st.slider("Antall fremtidige perioder", min_value=3, max_value=36, value=12)
     start_date = st.date_input("Vis historikk fra og med", pd.to_datetime("2022-01-01"))
 
+    
     try:
         forecast_df, historical_df, evaluation_df, mse = predict_from_csv(file_path, freq, periods)
 
@@ -83,6 +84,41 @@ def show():
             ax2.grid(True)
             ax2.legend()
             st.pyplot(fig2)
+
+                # --- Ny graf: viser interpolerte datapunkter fra originalfilen ---
+        st.subheader("Datapunkter og interpolasjon i originalfilen")
+
+        raw_df = pd.read_csv(file_path, parse_dates=['referenceTimestamp'])
+        if 'is_interpolated' in raw_df.columns:
+            raw_df = raw_df[raw_df['value'].notna()]
+            raw_df = raw_df.sort_values('referenceTimestamp')
+
+            # 🔽 Legg inn disse to linjene:
+            original = raw_df[~raw_df['is_interpolated']]
+            interpolated = raw_df[raw_df['is_interpolated']]
+
+            fig3, ax3 = plt.subplots(figsize=(10, 4))
+
+
+            # Originale verdier: tynnere linje, litt gjennomsiktig
+            ax3.plot(original['referenceTimestamp'], original['value'],
+                    label="Originale verdier", linewidth=1.2, alpha=0.7, zorder=1)
+
+            # Interpolerte verdier: foran, større og tydeligere
+            ax3.scatter(interpolated['referenceTimestamp'], interpolated['value'],
+                        color='orange', marker='x', label="Interpolerte verdier",
+                        s=60, linewidths=1.5, zorder=2)
+
+            ax3.set_title("Alle verdier i datafilen (med interpolasjon)")
+            ax3.set_xlabel("Tid")
+            ax3.set_ylabel("Verdi")
+            ax3.grid(True)
+            ax3.legend()
+            st.pyplot(fig3)
+
+        else:
+            st.info("Filen inneholder ikke informasjon om interpolerte verdier.")
+
 
     except Exception as e:
         st.error(f"Kunne ikke beregne prediksjon: {e}")
