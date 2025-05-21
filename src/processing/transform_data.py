@@ -41,7 +41,7 @@ def preprocess_dataframe(df):
 
 def remove_outliers(df):
     """
-    Fjerner outliers med Z-score.
+    Fjerner outliers med Z-score. 
     """
     df['value'] = df.groupby('datatype')['value'].transform(
         lambda x: x.where(np.abs(zscore(x.dropna())) < 3, np.nan)
