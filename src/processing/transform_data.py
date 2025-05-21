@@ -60,8 +60,11 @@ def resample_and_aggregate(df):
 
 def fill_missing_values(df):
     """
-    Fyller manglende verdier med lineær regresjon per datatype.
+    Fyller manglende verdier med lineær regresjon per datatype,
+    og markerer hvilke verdier som er interpolert.
     """
+    df["is_interpolated"] = False  # Legg til kolonne, default False
+
     for datatype in df['datatype'].unique():
         subset = df[df['datatype'] == datatype].copy()
         if subset.empty:
@@ -78,10 +81,17 @@ def fill_missing_values(df):
             reg.fit(known_x, known_y)
 
             pred_x = subset.loc[missing_mask, 'time_numeric'].values.reshape(-1, 1)
-            subset.loc[missing_mask, 'value'] = reg.predict(pred_x)
+            predicted_values = reg.predict(pred_x)
 
+            # Sett inn verdiene og merk de som interpolert
+            subset.loc[missing_mask, 'value'] = predicted_values
+            subset.loc[missing_mask, 'is_interpolated'] = True
+
+        # Oppdater opprinnelig df med subset
         df.update(subset.drop(columns=['time_numeric']))
+
     return df
+
 
 def add_station_metadata(df, stationsdata_path):
     """
@@ -114,5 +124,5 @@ def process_weather_data(df, stationsdata_path=None):
     if stationsdata_path:
         df = add_station_metadata(df, stationsdata_path)
 
-    return df[['sourceId', 'referenceTimestamp', 'datatype', 'value', 'unit', 'lon', 'lat'] if 'lon' in df.columns else ['sourceId', 'referenceTimestamp', 'datatype', 'value', 'unit']]
+    return df[['sourceId', 'referenceTimestamp', 'datatype', 'value', 'unit', 'lon', 'lat'] if 'lon' in df.columns else ['sourceId', 'referenceTimestamp', 'datatype', 'value', 'unit', 'is_interpolated']]
 

@@ -93,15 +93,14 @@ if __name__ == "__main__":
     ref_time = "2015-01-01/2025-01-01"
     source_id = "SN90450"
 
-    """
     fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D)',  '2015-01-01/2025-01-01', "Precipitation_data.csv")
     fetch2 = FrostDataFetcher(client_id, source_id, 'sum(duration_of_sunshine P1D)', '2015-01-01/2025-01-01', "Sunshine_data.csv")
     fetch3 = FrostDataFetcher(client_id, source_id, 'max(surface_air_pressure P1D)', '2015-01-01/2025-01-01', "Pressure_data.csv")
     fetch1.run()
     fetch2.run()
     fetch3.run()
-    """
     
+    """
     for station_name in ['Agder', 'Innlandet', 'Oslo', 'Viken', 'Vestfold og Telemark', 'Møre og Romsdal', 'Nordland', 'Vestland', 'Trøndelag', 'Troms og Finnmark', 'Rogaland']:
         
         # Hent alle lokasjoner i regionen
@@ -133,4 +132,4 @@ if __name__ == "__main__":
                     output_filename,
                     stationsdata_path=stationsdata_path # Sti til stationsdata.csv
                 )
-                fetch.run()
+                fetch.run() """
