@@ -6,6 +6,7 @@ from processing.heatmap_utils import load_data, filter_data, interpolate_data, m
 
 def show():
     st.title("Interpolert heatmap for nedbør i januar 2025")
+    st.write("Visualiserer interpolerte værdata for nedbør i januar 2025. Velg værtype og dato for å se dataene i kartet. Noen av områdene vil være vite på grunn av mangledne data og ikke temperatur. Vær oppmerksom på at interpolering ikke gir nøyaktige resulatater.")
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(current_dir, '..', '..', 'data', 'Jan_2025')
@@ -17,16 +18,21 @@ def show():
 
     max_value = df[df['datatype'] == datatype]["value"].max()
     dates = sorted(df['referenceTimestamp'].unique())
-    selected_index = st.number_input("Velg dag", min_value=0, max_value=len(dates) - 1, value=0, step=1)
+    selected_index = st.number_input("Velg dag", min_value=0, max_value=len(dates)-1, value=0, step=1)
     selected_date = dates[selected_index]
     st.write(f"Valgt dato: {selected_date}")
 
     radius = 80
     intensity = 0.7
     threshold = 0.05
+    cutoff = 75
+    if datatype == "temperatur":
+        cutoff = 750
 
     filtered_df = filter_data(df, datatype, selected_date, max_value)
-    interp_df = interpolate_data(filtered_df)
+    st.write(f"Antall punkter: {len(filtered_df)}")
+    interp_df = interpolate_data(filtered_df, cutoff)
+    st.write(f"Interpolerte punkter: {len(interp_df)}")
     deck = make_map(interp_df, radius, intensity, threshold)
 
     if deck:
