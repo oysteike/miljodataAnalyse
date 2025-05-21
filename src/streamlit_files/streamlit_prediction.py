@@ -10,7 +10,7 @@ def show():
     st.title("Fremtidsprediksjon basert på værdata")
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    data_dir = os.path.join(current_dir, '..', '..', 'data')
+    data_dir = os.path.join(current_dir, '..', '..', 'data', 'oslo_2015-2025')
     data_files = [f for f in os.listdir(data_dir) if f.endswith(".csv")]
     selected_file = st.selectbox("Velg datakilde (CSV)", sorted(data_files))
     file_path = os.path.join(data_dir, selected_file)
