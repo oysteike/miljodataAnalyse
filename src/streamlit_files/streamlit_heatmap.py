@@ -10,7 +10,6 @@ def show():
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(current_dir, '..', '..', 'data', 'Jan_2025')
-    outfile = "weather_map.html"
 
     df = load_data(data_dir)
     available_types = sorted(df['datatype'].unique())
@@ -53,6 +52,4 @@ def show():
         st.write(filtered_df["value"].describe())
         st.write("Antall interpolerte punkter:", len(interp_df))
 
-    if deck and st.button("Eksporter heatmap til HTML"):
-        deck.to_html(outfile, open_browser=False)
-        st.success(f"Heatmap lagret som {outfile}")
+

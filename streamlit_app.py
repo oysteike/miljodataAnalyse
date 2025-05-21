@@ -11,10 +11,11 @@ sys.path.append(src_path)
 from streamlit_files.streamlit_heatmap import show as show_heatmap
 from streamlit_files.streamlit_prediction import show as show_prediction
 from streamlit_files.streamlit_temperature import show as show_temperature
+from streamlit_files.streamlit_correlation import show as show_correlation
 
 # Meny
 st.sidebar.title("Navigasjon")
-valg = st.sidebar.radio("Velg funksjon:", ["Hjem", "Interpolert heatmap", "Fremtidsprediksjon", "Temperaturendringer"])
+valg = st.sidebar.radio("Velg funksjon:", ["Hjem", "Interpolert heatmap", "Fremtidsprediksjon", "Temperaturendringer", "Sammenligning av værdata"])
 
 # Hjem
 if valg == "Hjem":
@@ -35,3 +36,5 @@ elif valg == "Fremtidsprediksjon":
     show_prediction()
 elif valg == "Temperaturendringer":
     show_temperature()
+elif valg == "Sammenligning av værdata":
+    show_correlation()
