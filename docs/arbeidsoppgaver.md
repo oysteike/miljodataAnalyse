@@ -1,10 +1,10 @@
 - Øystein
     requirements.txt (Utviklingsmiljø)
-    Skalering 
-    Evaluering av reg-modell
+    Skalering x
+    Evaluering av reg-modell x
     Noen flere enhetstester (Enhetstesting)
-    Visuaisere compiled data i Graf
-    Test-Split-Learn
+    Test-Split-Learn x
+    isuaisere compiled data i Graf
 - Georg
     Dokumentasjon (Kodekvalitet)
     Visuaisere compiled data i Datafiler
