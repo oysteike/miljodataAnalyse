@@ -26,7 +26,6 @@ def resample_and_engineer_features(df, freq):
 
     return df, start_time, period_len
 
-
 def train_linear_model(df):
     X = df[['time_numeric', 'season_sin', 'season_cos']]
     y = df['value']
