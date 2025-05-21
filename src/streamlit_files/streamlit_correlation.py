@@ -22,14 +22,24 @@ def show():
 
     file_path1 = os.path.join(data_dir, selected_file1)
     file_path2 = os.path.join(data_dir, selected_file2)
-    st.write(f"Valgte filstier: {file_path1} og {file_path2}")
 
     df = load_data(file_path1, file_path2)
     st.write(f"Antall datapunkter: {len(df)}")
-    st.write(df.head())
-    fig1, fig2, fig3 = plot_weather_dashboard(df)
-    st.pyplot(fig1)
-    st.pyplot(fig2)
-    st.pyplot(fig3)
-    correlation = calculate_correlation(df)
-    st.write(f"Korrelasjonskoeffisient mellom {selected_file1} og {selected_file2}: {correlation}")
+
+    start_date = st.date_input("Velg start-dato", min_value=pd.to_datetime("2015-01-01"), max_value=pd.to_datetime("2025-01-01"), value=pd.to_datetime("2015-01-01"))
+    end_date = st.date_input("Velg slutt-dato", min_value=start_date, max_value=pd.to_datetime("2025-01-01"), value=pd.to_datetime("2025-01-01"))
+    start_date_ts = pd.Timestamp(start_date)
+    end_date_ts = pd.Timestamp(end_date)
+
+    # Filtrer datasettet basert på start- og slutt-dato
+    df_filtered = df[(pd.to_datetime(df['referenceTimestamp']) >= start_date_ts) & (pd.to_datetime(df['referenceTimestamp']) <= end_date_ts)]
+
+    st.write(f"Antall datapunkter vist: {len(df_filtered)}")
+    st.write(df_filtered.head())
+
+    correlation = calculate_correlation(df) # Bruker fortsatt hele datasettet til korrelasjon
+    st.write(correlation)
+
+    fig1, fig2 = plot_weather_dashboard(df_filtered) # Bruker bare de filtrerte datapunktene til å plotte
+    st.plotly_chart(fig1)
+    st.plotly_chart(fig2)

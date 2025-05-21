@@ -43,7 +43,6 @@ def show():
         unit = "m/s" if datatype.lower() == "vind" else "mm"
         st.write(f"Verdier: {min_val:.1f} {unit} – {max_value:.1f} {unit}")
         legend = plot_legend(min_val, max_value, datatype)
-
         st.image(legend)
 
     with st.expander("Rådata og statistikk"):

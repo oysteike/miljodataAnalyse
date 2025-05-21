@@ -22,7 +22,7 @@ def show():
     st.write(f"På rett spor: {'Ja' if progress['on_track'] else 'Nei'}")
     st.write(f"Nødvendig reduksjon per år: {reduction_per_year:.2f} °C")
 
-    st.subheader("Temperaturavvik siden Parisavtalen (baseline: 1963–1990)")
+    st.subheader("Temperaturavvik siden Parisavtalen (baseline: 1990-2020)")
 
     # Månedlig visning
     fig1, ax1 = plt.subplots(figsize=(12, 6))
