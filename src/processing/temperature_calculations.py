@@ -90,7 +90,6 @@ def analyze_temperature_progress(TEMPERATURE_DIR):
     """
     df = load_all_temperature_data(TEMPERATURE_DIR)
     if df.empty:
-        print("Ingen data lastet.")
         return None, None, None
 
     monthly_anomalies = calculate_monthly_anomalies(df)

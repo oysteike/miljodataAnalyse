@@ -24,6 +24,9 @@ def show():
     file_path2 = os.path.join(data_dir, selected_file2)
 
     df = load_data(file_path1, file_path2)
+    if df.empty:
+        st.warning("Se over at filene inneholder rett data, og at de er i riktig format. Ingen data ble hentet.")
+        return
     st.write(f"Antall datapunkter: {len(df)}")
 
     start_date = st.date_input("Velg start-dato", min_value=pd.to_datetime("2015-01-01"), max_value=pd.to_datetime("2025-01-01"), value=pd.to_datetime("2015-01-01"))
@@ -36,7 +39,10 @@ def show():
 
     st.write(f"Antall datapunkter vist: {len(df_filtered)}")
 
-    corr = calculate_correlation(df) # Bruker fortsatt hele datasettet til korrelasjon
+    corr = calculate_correlation(df)
+    if corr is None:
+        st.warning("Fant ikke ønsket kolonner å sammenligne. Sjekk at datasett har data av to slag.")
+
     if abs(corr) < 0.3:
         st.warning(f"Korrelasjonen er svak; {corr}. Det er ingen klar sammenheng i datasettene")
     elif abs(corr) > 0.7:
@@ -46,8 +52,10 @@ def show():
     else:
         st.info(f"Det er en negativ sammenheng i datasettene. Korrelasjone har verdi: {corr}")
 
-
     fig1, fig2 = plot_weather_dashboard(df_filtered) # Bruker bare de filtrerte datapunktene til å plotte
+    if fig1 is None or fig2 is None:
+        st.warning("Ingen data å plotte. Sjekk at datasett har data av to slag.")
+        return
     st.plotly_chart(fig1)
     st.plotly_chart(fig2)
 

@@ -17,7 +17,11 @@ def show():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(current_dir, '..', '..', 'data', 'Jan_2025')
 
-    df = load_data(data_dir)
+    try:
+        df = load_data(data_dir)
+    except Exception as e:
+        st.error(f"Kunne ikke laste opp data: {e}. Vennligst sjekk datakildene og prøv igjen.")
+        return
     available_types = sorted(df['datatype'].unique())
     datatype = st.selectbox("Velg værtype", available_types)
 
@@ -35,23 +39,23 @@ def show():
         cutoff = 750
 
     filtered_df = filter_data(df, datatype, selected_date, max_value)
-    st.write(f"Antall punkter: {len(filtered_df)}")
+
     interp_df = interpolate_data(filtered_df, cutoff)
-    st.write(f"Interpolerte punkter: {len(interp_df)}")
+    if interp_df.empty:
+        st.warning("Datasettet inneholder ikke nødvendig data for interpolering. Minst 3 datapunkter og posisjon er nødvendig.")
+        return
+
     deck = make_map(interp_df, radius, intensity, threshold)
+    st.pydeck_chart(deck)
 
-    if deck:
-        st.pydeck_chart(deck)
+    min_val = filtered_df["value"].min()
+    st.subheader("Fargeskala")
+    unit = "m/s" if datatype.lower() == "vind" else "mm"
+    st.write(f"Verdier: {min_val:.1f} {unit} – {max_value:.1f} {unit}")
+    legend = plot_legend(min_val, max_value, datatype)
+    st.image(legend)
 
-    if not filtered_df.empty:
-        min_val = filtered_df["value"].min()
-        st.subheader("Fargeskala")
-        unit = "m/s" if datatype.lower() == "vind" else "mm"
-        st.write(f"Verdier: {min_val:.1f} {unit} – {max_value:.1f} {unit}")
-        legend = plot_legend(min_val, max_value, datatype)
-        st.image(legend)
-
-    with st.expander("Rådata og statistikk"):
+    with st.expander("📊 Rådata og statistikk"):
         st.write("Antall opprinnelige punkter:", len(filtered_df))
         st.dataframe(filtered_df[["lat", "lon", "value"]].head())
         st.write(filtered_df["value"].describe())

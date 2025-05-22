@@ -7,20 +7,23 @@ def load_data(file_path1, file_path2):
     Leser inn to CSV-filer og sammenligner dem basert på kolonnene 'referenceTimestamp' og 'value'.
     Returnerer en DataFrame med forskjeller mellom de to datasettene.
     """
-    #try:
-    df1 = pd.read_csv(file_path1)
-    df2 = pd.read_csv(file_path2)
+    try:
+        df1 = pd.read_csv(file_path1)
+        df2 = pd.read_csv(file_path2)
 
-    # Gjør om verdier slik at de kan sammenlignes
-    df1['referenceTimestamp'] = pd.to_datetime(df1['referenceTimestamp']).dt.date
-    df2['referenceTimestamp'] = pd.to_datetime(df2['referenceTimestamp']).dt.date
-    df1['value'] = pd.to_numeric(df1['value'])
-    df2['value'] = pd.to_numeric(df2['value'])
+        df1['referenceTimestamp'] = pd.to_datetime(df1['referenceTimestamp']).dt.date
+        df2['referenceTimestamp'] = pd.to_datetime(df2['referenceTimestamp']).dt.date
+        df1['value'] = pd.to_numeric(df1['value'])
+        df2['value'] = pd.to_numeric(df2['value'])
 
-    # Slå sammen dataene basert på 'referenceTimestamp'
-    merged_df = pd.merge(df1, df2, on='referenceTimestamp', suffixes=('_1', '_2'))
+        merged_df = pd.merge(df1, df2, on='referenceTimestamp', suffixes=('_1', '_2'))
 
-    return merged_df[['referenceTimestamp', 'value_1', 'value_2']]
+        if merged_df.empty:
+            return pd.DataFrame()
+        return merged_df[['referenceTimestamp', 'value_1', 'value_2']]
+
+    except Exception:
+        return pd.DataFrame()
 
 def plot_weather_dashboard(df):
     """
@@ -29,7 +32,7 @@ def plot_weather_dashboard(df):
     Returnerer figurene og korrelasjonskoeffisienten.
     """
     if df.empty or not {'referenceTimestamp', 'value_1', 'value_2'}.issubset(df.columns):
-        return None, None, None
+        return None, None
 
     # Tidsserieplot
     fig1 = go.Figure()

@@ -51,27 +51,25 @@ def filter_data(df, datatype, selected_date, max_value):
     """
     Filtrerer data etter ønsket datatype og dato.
     """
-    df2 = df[
-        (df['datatype'] == datatype) &
-        (df['referenceTimestamp'] == selected_date)
-    ].copy()
-
+    df2 = df[(df['datatype'] == datatype) &(df['referenceTimestamp'] == selected_date)].copy()
     df2['plot_value'] = df2[VALUE]
-
     return df2
 
 def interpolate_data(df, cutoff_km):
     """
     Interpolerer måledata over et rutenett (grid), men ekskluderer områder
     som ligger for langt unna et faktisk datapunkt.
-    """
-    grid_res=200
+    """    
+    required_cols = {LON, LAT, 'plot_value'}
+    if not required_cols.issubset(df.columns):
+        return df_clean  # Mangler nødvendige kolonner
+   
     df_clean = df.dropna(subset=[LON, LAT, 'plot_value'])
-
     if len(df_clean) < 3:
         return df_clean  # Ikke nok data til interpolasjon
 
     # Lag et jevnt grid over området
+    grid_res=200
     grid_lon = np.linspace(df_clean[LON].min(), df_clean[LON].max(), grid_res)
     grid_lat = np.linspace(df_clean[LAT].min(), df_clean[LAT].max(), grid_res)
     grid_x, grid_y = np.meshgrid(grid_lon, grid_lat)
@@ -107,9 +105,6 @@ def make_map(df, radius, intensity, threshold):
     """
     Lager et pydeck heatmap basert på input-data.
     """
-    if df.empty:
-        return None  # Ikke vis noe hvis det ikke er data
-
     view_state = pdk.ViewState(
         latitude=df[LAT].mean(),
         longitude=df[LON].mean(),

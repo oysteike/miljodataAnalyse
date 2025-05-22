@@ -16,43 +16,60 @@ def show():
 
     df, progress, reduction_per_year = analyze_temperature_progress(data_dir)
 
-    st.subheader("Oversikt over temperaturendringer")
-    st.write(f"År: {progress['latest_year']}")
-    st.write(f"Temperaturavvik dette året: {progress['latest_anomaly']:.2f} °C")
-    st.write(f"Avvik fra mål: {progress['overshoot']:.2f} °C")
-    st.write(f"På rett spor: {'Ja' if progress['on_track'] else 'Nei'}")
-    st.write(f"Nødvendig reduksjon per år: {reduction_per_year:.2f} °C")
+    if progress is not None and not df.empty:
+        try:
+            st.subheader("Oversikt over temperaturendringer")
+            st.write(f"År: {progress['latest_year']}")
+            st.write(f"Temperaturavvik dette året: {progress['latest_anomaly']:.2f} °C")
+            st.write(f"Avvik fra mål: {progress['overshoot']:.2f} °C")
+            st.write(f"På rett spor: {'Ja' if progress['on_track'] else 'Nei'}")
+            st.write(f"Nødvendig reduksjon per år: {reduction_per_year:.2f} °C")
 
-    st.subheader("Temperaturavvik siden Parisavtalen (baseline: 1990–2020)")
-    st.write("Rød linje representerer endringen i temperatur vi ønsker å holde oss under. Mens prikkene viser avviket fra normal temperatur i Norge.")
+            if 'referenceTimestamp' in df.columns and 'anomaly' in df.columns:
+                st.subheader("Temperaturavvik siden Parisavtalen")
 
-    # Plotter månedlig gjennomsnittelig temperaturavvik
-    fig_monthly = px.scatter(
-        df,
-        x='referenceTimestamp',
-        y='anomaly',
-        title="Månedlig temperaturavvik",
-        labels={'referenceTimestamp': 'År', 'anomaly': 'Avvik fra normal (°C)'},
-        color_discrete_sequence=['blue'],
-        opacity=0.6
-    )
-    fig_monthly.add_hline(y=target, line_dash='dash', line_color='red', annotation_text=f"Mål: {target} °C", annotation_position="top left")
-    st.plotly_chart(fig_monthly, use_container_width=True)
+                fig_monthly = px.scatter(
+                    df,
+                    x='referenceTimestamp',
+                    y='anomaly',
+                    title="Månedlig temperaturavvik",
+                    labels={'referenceTimestamp': 'År', 'anomaly': 'Avvik fra normal (°C)'},
+                    color_discrete_sequence=['blue'],
+                    opacity=0.6
+                )
+                fig_monthly.add_hline(
+                    y=target,
+                    line_dash='dash',
+                    line_color='red',
+                    annotation_text=f"Mål: {target} °C",
+                    annotation_position="top left"
+                )
+                st.plotly_chart(fig_monthly, use_container_width=True)
 
-    # Plotter årlig gjennomsnittlig temperaturavvik
-    df['year'] = df['referenceTimestamp'].dt.year
-    annual_df = df.groupby('year')['anomaly'].mean().reset_index()
+                df['year'] = df['referenceTimestamp'].dt.year
+                annual_df = df.groupby('year')['anomaly'].mean().reset_index()
 
-    fig_annual = px.scatter(
-        annual_df,
-        x='year',
-        y='anomaly',
-        title="Årlig temperaturavvik",
-        labels={'year': 'År', 'anomaly': 'Avvik fra normal (°C)'},
-        color_discrete_sequence=['green'],
-        opacity=0.8
-    )
-    fig_annual.add_hline(y=target, line_dash='dash', line_color='red', annotation_text=f"Mål: {target} °C", annotation_position="top left")
-    st.plotly_chart(fig_annual, use_container_width=True)
+                fig_annual = px.scatter(
+                    annual_df,
+                    x='year',
+                    y='anomaly',
+                    title="Årlig temperaturavvik",
+                    labels={'year': 'År', 'anomaly': 'Avvik fra normal (°C)'},
+                    color_discrete_sequence=['green'],
+                    opacity=0.8
+                )
+                fig_annual.add_hline(
+                    y=target,
+                    line_dash='dash',
+                    line_color='red',
+                    annotation_text=f"Mål: {target} °C",
+                    annotation_position="top left"
+                )
+                st.plotly_chart(fig_annual, use_container_width=True)
 
-    st.write("NB! Denne analysen er så forenklet at den ikke er egnet for å trekke konklusjoner om klimaendringer. Justeringer i temperatur må ses i en større sammenheng enn kun målinger fra enkelte måneder i enkelte land. Dette er kun med på å illustrere hvordan en slik analyse kan gjøres.")
+            else:
+                st.warning("Datasettet mangler nødvendige kolonner for å vise grafer.")
+        except Exception as e:
+            st.error(f"Feil under plotting av grafer: {e}")
+    else:
+        st.error("Ingen gyldige data tilgjengelig for analyse.")

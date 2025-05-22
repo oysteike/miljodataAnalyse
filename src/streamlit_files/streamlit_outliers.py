@@ -5,7 +5,7 @@ import pandas as pd
 
 def show():
     st.title("Identifisering av uteliggere i værdata")
-    st.write("Denne funksjonen lar deg laste opp en CSV-fil med værdata og identifisere eventuelle uteliggere i dataene.")
+    st.write("Denne funksjonen lar deg laste opp en CSV-fil med værdata og identifisere eventuelle uteliggere i dataene. Datasettene som er brukt til predektiv analyse og korrelasjon.")
 
     # Velg datakilde
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +15,12 @@ def show():
     file_path = os.path.join(data_dir, selected_file)
 
     # Last opp fil
-    df = pd.read_csv(file_path)
-    st.write(f"Antall datapunkter: {len(df)}")
+    try:
+        df = pd.read_csv(file_path)
+        st.write(f"Antall datapunkter: {len(df)}")
+        st.dataframe(df)
 
-    st.dataframe(df)
+    except Exception as e:
+        st.error(f"Kunne ikke laste opp filen: {e}. Vennligst sjekk filformatet og prøv igjen.")
+        
+
