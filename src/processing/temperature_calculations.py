@@ -16,27 +16,20 @@ def load_all_temperature_data(directory):
         for file in all_files:
             df = pd.read_csv(file)
             df['referenceTimestamp'] = pd.to_datetime(df['referenceTimestamp'])
-
-            # Beregn månedlig snitt per stasjon
-            monthly = df.groupby(pd.Grouper(key='referenceTimestamp', freq='M'))['value'].mean().reset_index()
+            monthly = df.groupby(pd.Grouper(key='referenceTimestamp', freq='ME'))['value'].mean().reset_index()
             df_list.append(monthly)
 
-        # Slå sammen alle målinger (alle stasjoner)
         combined_df = pd.concat(df_list)
-        
-        # Nå tar vi gjennomsnittet av alle stasjoner per måned
         combined_monthly_avg = combined_df.groupby('referenceTimestamp')['value'].mean().reset_index()
-
         return combined_monthly_avg
     
-    except Exception as e:
-        print(f"Feil ved lasting av temperaturdata: {e}")
+    except Exception:
         return pd.DataFrame()
 
 def calculate_monthly_anomalies(df):
     """
     Tar inn DataFrame med kolonner 'referenceTimestamp' og 'value',
-    beregner månedsvise temperaturavvik i forhold til normals.
+    beregner månedsvise temperaturavvik i forhold til normalverdier mellom 1990 og 2020.
     """
     normals = {
     1: -4.3, 2: -4.1, 3: -0.6, 4: 3.1, 5: 8.7, 6: 12.5, 7: 14.2, 8: 13.5, 9: 9.7, 10: 5.1, 11: 0.1, 12: -3.1
@@ -46,7 +39,6 @@ def calculate_monthly_anomalies(df):
     df['year'] = df['referenceTimestamp'].dt.year
     df['normal'] = df['month_num'].map(normals)
     df['anomaly'] = df['value'] - df['normal']
-
 
     return df[['referenceTimestamp', 'year', 'month_num', 'value', 'normal', 'anomaly']]
 
@@ -89,7 +81,8 @@ def analyze_temperature_progress(TEMPERATURE_DIR):
     - Kalkuler nødvendig reduksjon
     """
     df = load_all_temperature_data(TEMPERATURE_DIR)
-    if df.empty:
+    requiered_cols = {'referenceTimestamp', 'value'}
+    if not requiered_cols.issubset(df.columns):
         return None, None, None
 
     monthly_anomalies = calculate_monthly_anomalies(df)

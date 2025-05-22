@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src')))
 from processing.temperature_calculations import analyze_temperature_progress
 
 def show():
-    st.title("Temperaturutvikling i Norge")
+    st.title("Temperaturutvikling i lys av Parisavtalen")
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(current_dir, '..', '..', 'data', 'temperature_since_2015')
@@ -18,15 +18,17 @@ def show():
 
     if progress is not None and not df.empty:
         try:
-            st.subheader("Oversikt over temperaturendringer")
-            st.write(f"År: {progress['latest_year']}")
-            st.write(f"Temperaturavvik dette året: {progress['latest_anomaly']:.2f} °C")
-            st.write(f"Avvik fra mål: {progress['overshoot']:.2f} °C")
-            st.write(f"På rett spor: {'Ja' if progress['on_track'] else 'Nei'}")
-            st.write(f"Nødvendig reduksjon per år: {reduction_per_year:.2f} °C")
+            st.write("Denne siden forsøker å gi et bilde av hvordan temperaturen i Norge utvikler seg i forhold til målet satt ved Parisavtalen.")
 
+            st.markdown(f"""
+            - **År:** {progress['latest_year']}
+            - **Temperaturavvik dette året:** {progress['latest_anomaly']:.2f} °C  
+            - **Avvik fra mål:** {progress['overshoot']:.2f} °C  
+            - **På rett spor:** {'✅ Ja' if progress['on_track'] else '❌ Nei'}  
+            - **Nødvendig reduksjon per år:** {reduction_per_year:.2f} °C
+            """)
             if 'referenceTimestamp' in df.columns and 'anomaly' in df.columns:
-                st.subheader("Temperaturavvik siden Parisavtalen")
+                st.subheader("Temperaturavvik fra normalverdier (1990-2020)")
 
                 fig_monthly = px.scatter(
                     df,
