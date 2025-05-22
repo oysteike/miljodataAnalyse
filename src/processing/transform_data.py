@@ -4,6 +4,7 @@ from scipy.stats import zscore
 from sklearn.linear_model import LinearRegression
 from datetime import timedelta
 import isodate
+import os
 
 """
 Denne metoden renser og prosesserer værdata fra frost.met.no.
@@ -41,12 +42,31 @@ def preprocess_dataframe(df):
 
 def remove_outliers(df):
     """
-    Fjerner outliers med Z-score. 
+    Fjerner outliers med Z-score og returnerer både renset og fjernet data.
     """
-    df['value'] = df.groupby('datatype')['value'].transform(
-        lambda x: x.where(np.abs(zscore(x.dropna())) < 3, np.nan)
-    )
-    return df
+    def identify_outliers(group):
+        z_scores = zscore(group.dropna())
+        mask = np.abs(z_scores) < 3
+        outliers = group[~mask]
+        cleaned = group.where(mask)
+        return cleaned, outliers
+
+    outlier_rows = []
+    cleaned_values = []
+
+    for name, group in df.groupby('datatype'):
+        values = group['value']
+        cleaned, outliers = identify_outliers(values)
+        group_cleaned = group.copy()
+        group_cleaned['value'] = cleaned
+        outlier_rows.append(group[values.isin(outliers)])
+        cleaned_values.append(group_cleaned)
+
+    cleaned_df = pd.concat(cleaned_values, ignore_index=True)
+    outliers_df = pd.concat(outlier_rows, ignore_index=True)
+    outliers_df['reason'] = 'zscore_outlier'
+
+    return cleaned_df, outliers_df
 
 def resample_and_aggregate(df):
     """
@@ -90,9 +110,6 @@ def fill_missing_values(df):
 
     return pd.concat(result, ignore_index=True)
 
-
-
-
 def add_station_metadata(df, stationsdata_path):
     """
     Legger til stasjonsnavn og koordinater hvis metadata er tilgjengelig.
@@ -117,12 +134,14 @@ def process_weather_data(df, stationsdata_path=None):
     """
     df = clean_columns(df)
     df = preprocess_dataframe(df)
-    df = remove_outliers(df)
+    df, outliers = remove_outliers(df)
     df = resample_and_aggregate(df)
     df = fill_missing_values(df)
 
     if stationsdata_path:
         df = add_station_metadata(df, stationsdata_path)
+    
+    if not outliers.empty:
+        outliers.to_csv(os.path.join(os.getcwd(), 'data', 'outliers', f'{outliers.loc[1, "datatype"]}.csv'))
 
     return df[['sourceId', 'referenceTimestamp', 'datatype', 'value', 'unit', 'lon', 'lat'] if 'lon' in df.columns else ['sourceId', 'referenceTimestamp', 'datatype', 'value', 'unit', 'is_interpolated']]
-

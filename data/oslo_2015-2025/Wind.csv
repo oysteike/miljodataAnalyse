@@ -364,7 +364,7 @@ SN90450:0,2015-12-28 00:00:00+00:00,mean(wind_speed P1D),4.6,m/s,False
 SN90450:0,2015-12-29 00:00:00+00:00,mean(wind_speed P1D),3.5,m/s,False
 SN90450:0,2015-12-30 00:00:00+00:00,mean(wind_speed P1D),5.2,m/s,False
 SN90450:0,2015-12-31 00:00:00+00:00,mean(wind_speed P1D),5.8,m/s,False
-SN90450:0,2016-01-01 00:00:00+00:00,mean(wind_speed P1D),5.1,m/s,True
+SN90450:0,2016-01-01 00:00:00+00:00,mean(wind_speed P1D),5.1000000000000005,m/s,True
 SN90450:0,2016-01-02 00:00:00+00:00,mean(wind_speed P1D),4.4,m/s,False
 SN90450:0,2016-01-03 00:00:00+00:00,mean(wind_speed P1D),3.5,m/s,False
 SN90450:0,2016-01-04 00:00:00+00:00,mean(wind_speed P1D),6.2,m/s,False
@@ -735,7 +735,7 @@ SN90450:0,2017-01-02 00:00:00+00:00,mean(wind_speed P1D),3.5,m/s,False
 SN90450:0,2017-01-03 00:00:00+00:00,mean(wind_speed P1D),2.8,m/s,False
 SN90450:0,2017-01-04 00:00:00+00:00,mean(wind_speed P1D),3.5,m/s,False
 SN90450:0,2017-01-05 00:00:00+00:00,mean(wind_speed P1D),7.8,m/s,False
-SN90450:0,2017-01-06 00:00:00+00:00,mean(wind_speed P1D),6.4,m/s,True
+SN90450:0,2017-01-06 00:00:00+00:00,mean(wind_speed P1D),6.3999999999999995,m/s,True
 SN90450:0,2017-01-07 00:00:00+00:00,mean(wind_speed P1D),5.0,m/s,False
 SN90450:0,2017-01-08 00:00:00+00:00,mean(wind_speed P1D),7.7,m/s,False
 SN90450:0,2017-01-09 00:00:00+00:00,mean(wind_speed P1D),3.7,m/s,False
@@ -1130,7 +1130,7 @@ SN90450:0,2018-02-01 00:00:00+00:00,mean(wind_speed P1D),3.7,m/s,False
 SN90450:0,2018-02-02 00:00:00+00:00,mean(wind_speed P1D),1.9,m/s,False
 SN90450:0,2018-02-03 00:00:00+00:00,mean(wind_speed P1D),4.5,m/s,False
 SN90450:0,2018-02-04 00:00:00+00:00,mean(wind_speed P1D),5.9,m/s,False
-SN90450:0,2018-02-05 00:00:00+00:00,mean(wind_speed P1D),5.050000000000001,m/s,True
+SN90450:0,2018-02-05 00:00:00+00:00,mean(wind_speed P1D),5.05,m/s,True
 SN90450:0,2018-02-06 00:00:00+00:00,mean(wind_speed P1D),4.2,m/s,False
 SN90450:0,2018-02-07 00:00:00+00:00,mean(wind_speed P1D),7.5,m/s,False
 SN90450:0,2018-02-08 00:00:00+00:00,mean(wind_speed P1D),6.9,m/s,False
@@ -2978,7 +2978,7 @@ SN90450:0,2023-02-23 00:00:00+00:00,mean(wind_speed P1D),7.9,m/s,False
 SN90450:0,2023-02-24 00:00:00+00:00,mean(wind_speed P1D),2.8,m/s,False
 SN90450:0,2023-02-25 00:00:00+00:00,mean(wind_speed P1D),2.8,m/s,False
 SN90450:0,2023-02-26 00:00:00+00:00,mean(wind_speed P1D),5.8,m/s,False
-SN90450:0,2023-02-27 00:00:00+00:00,mean(wind_speed P1D),4.65,m/s,True
+SN90450:0,2023-02-27 00:00:00+00:00,mean(wind_speed P1D),4.6499999999999995,m/s,True
 SN90450:0,2023-02-28 00:00:00+00:00,mean(wind_speed P1D),3.5,m/s,False
 SN90450:0,2023-03-01 00:00:00+00:00,mean(wind_speed P1D),4.0,m/s,False
 SN90450:0,2023-03-02 00:00:00+00:00,mean(wind_speed P1D),3.7,m/s,False
@@ -3330,7 +3330,7 @@ SN90450:0,2024-02-10 00:00:00+00:00,mean(wind_speed P1D),6.0,m/s,False
 SN90450:0,2024-02-11 00:00:00+00:00,mean(wind_speed P1D),3.1,m/s,False
 SN90450:0,2024-02-12 00:00:00+00:00,mean(wind_speed P1D),2.0,m/s,False
 SN90450:0,2024-02-13 00:00:00+00:00,mean(wind_speed P1D),5.3,m/s,False
-SN90450:0,2024-02-14 00:00:00+00:00,mean(wind_speed P1D),6.699999999999999,m/s,True
+SN90450:0,2024-02-14 00:00:00+00:00,mean(wind_speed P1D),6.7,m/s,True
 SN90450:0,2024-02-15 00:00:00+00:00,mean(wind_speed P1D),8.1,m/s,False
 SN90450:0,2024-02-16 00:00:00+00:00,mean(wind_speed P1D),5.3,m/s,False
 SN90450:0,2024-02-17 00:00:00+00:00,mean(wind_speed P1D),1.8,m/s,False
@@ -3340,7 +3340,7 @@ SN90450:0,2024-02-20 00:00:00+00:00,mean(wind_speed P1D),1.9,m/s,False
 SN90450:0,2024-02-21 00:00:00+00:00,mean(wind_speed P1D),3.7,m/s,False
 SN90450:0,2024-02-22 00:00:00+00:00,mean(wind_speed P1D),3.7,m/s,False
 SN90450:0,2024-02-23 00:00:00+00:00,mean(wind_speed P1D),3.2,m/s,False
-SN90450:0,2024-02-24 00:00:00+00:00,mean(wind_speed P1D),5.15,m/s,True
+SN90450:0,2024-02-24 00:00:00+00:00,mean(wind_speed P1D),5.1499999999999995,m/s,True
 SN90450:0,2024-02-25 00:00:00+00:00,mean(wind_speed P1D),7.1,m/s,False
 SN90450:0,2024-02-26 00:00:00+00:00,mean(wind_speed P1D),5.6,m/s,False
 SN90450:0,2024-02-27 00:00:00+00:00,mean(wind_speed P1D),5.0,m/s,True
@@ -3571,7 +3571,7 @@ SN90450:0,2024-10-08 00:00:00+00:00,mean(wind_speed P1D),3.4,m/s,False
 SN90450:0,2024-10-09 00:00:00+00:00,mean(wind_speed P1D),3.3,m/s,False
 SN90450:0,2024-10-10 00:00:00+00:00,mean(wind_speed P1D),5.4,m/s,False
 SN90450:0,2024-10-11 00:00:00+00:00,mean(wind_speed P1D),3.4,m/s,False
-SN90450:0,2024-10-12 00:00:00+00:00,mean(wind_speed P1D),5.699999999999999,m/s,True
+SN90450:0,2024-10-12 00:00:00+00:00,mean(wind_speed P1D),5.7,m/s,True
 SN90450:0,2024-10-13 00:00:00+00:00,mean(wind_speed P1D),8.0,m/s,False
 SN90450:0,2024-10-14 00:00:00+00:00,mean(wind_speed P1D),5.0,m/s,False
 SN90450:0,2024-10-15 00:00:00+00:00,mean(wind_speed P1D),4.4,m/s,False

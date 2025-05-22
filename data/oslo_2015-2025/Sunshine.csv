@@ -890,7 +890,7 @@ SN90450:0,2017-06-06 00:00:00+00:00,sum(duration_of_sunshine P1D),9.4,hours,Fals
 SN90450:0,2017-06-07 00:00:00+00:00,sum(duration_of_sunshine P1D),10.512500000000001,hours,True
 SN90450:0,2017-06-08 00:00:00+00:00,sum(duration_of_sunshine P1D),11.625,hours,True
 SN90450:0,2017-06-09 00:00:00+00:00,sum(duration_of_sunshine P1D),12.7375,hours,True
-SN90450:0,2017-06-10 00:00:00+00:00,sum(duration_of_sunshine P1D),13.850000000000001,hours,True
+SN90450:0,2017-06-10 00:00:00+00:00,sum(duration_of_sunshine P1D),13.85,hours,True
 SN90450:0,2017-06-11 00:00:00+00:00,sum(duration_of_sunshine P1D),14.9625,hours,True
 SN90450:0,2017-06-12 00:00:00+00:00,sum(duration_of_sunshine P1D),16.075,hours,True
 SN90450:0,2017-06-13 00:00:00+00:00,sum(duration_of_sunshine P1D),17.1875,hours,True
@@ -910,7 +910,7 @@ SN90450:0,2017-06-26 00:00:00+00:00,sum(duration_of_sunshine P1D),5.1,hours,Fals
 SN90450:0,2017-06-27 00:00:00+00:00,sum(duration_of_sunshine P1D),0.1,hours,False
 SN90450:0,2017-06-28 00:00:00+00:00,sum(duration_of_sunshine P1D),7.0,hours,False
 SN90450:0,2017-06-29 00:00:00+00:00,sum(duration_of_sunshine P1D),10.0,hours,False
-SN90450:0,2017-06-30 00:00:00+00:00,sum(duration_of_sunshine P1D),10.95,hours,True
+SN90450:0,2017-06-30 00:00:00+00:00,sum(duration_of_sunshine P1D),10.950000000000001,hours,True
 SN90450:0,2017-07-01 00:00:00+00:00,sum(duration_of_sunshine P1D),11.9,hours,False
 SN90450:0,2017-07-02 00:00:00+00:00,sum(duration_of_sunshine P1D),1.9,hours,False
 SN90450:0,2017-07-03 00:00:00+00:00,sum(duration_of_sunshine P1D),0.0,hours,False
@@ -2333,7 +2333,7 @@ SN90450:0,2021-05-19 00:00:00+00:00,sum(duration_of_sunshine P1D),6.1,hours,Fals
 SN90450:0,2021-05-20 00:00:00+00:00,sum(duration_of_sunshine P1D),0.0,hours,False
 SN90450:0,2021-05-21 00:00:00+00:00,sum(duration_of_sunshine P1D),14.5,hours,False
 SN90450:0,2021-05-22 00:00:00+00:00,sum(duration_of_sunshine P1D),4.9,hours,False
-SN90450:0,2021-05-23 00:00:00+00:00,sum(duration_of_sunshine P1D),11.05,hours,True
+SN90450:0,2021-05-23 00:00:00+00:00,sum(duration_of_sunshine P1D),11.049999999999999,hours,True
 SN90450:0,2021-05-24 00:00:00+00:00,sum(duration_of_sunshine P1D),17.2,hours,False
 SN90450:0,2021-05-25 00:00:00+00:00,sum(duration_of_sunshine P1D),12.9,hours,False
 SN90450:0,2021-05-26 00:00:00+00:00,sum(duration_of_sunshine P1D),17.3,hours,False
@@ -2708,7 +2708,7 @@ SN90450:0,2022-05-29 00:00:00+00:00,sum(duration_of_sunshine P1D),11.5,hours,Fal
 SN90450:0,2022-05-30 00:00:00+00:00,sum(duration_of_sunshine P1D),12.766666666666667,hours,True
 SN90450:0,2022-05-31 00:00:00+00:00,sum(duration_of_sunshine P1D),14.033333333333333,hours,True
 SN90450:0,2022-06-01 00:00:00+00:00,sum(duration_of_sunshine P1D),15.3,hours,False
-SN90450:0,2022-06-02 00:00:00+00:00,sum(duration_of_sunshine P1D),9.850000000000001,hours,True
+SN90450:0,2022-06-02 00:00:00+00:00,sum(duration_of_sunshine P1D),9.85,hours,True
 SN90450:0,2022-06-03 00:00:00+00:00,sum(duration_of_sunshine P1D),4.4,hours,False
 SN90450:0,2022-06-04 00:00:00+00:00,sum(duration_of_sunshine P1D),0.0,hours,False
 SN90450:0,2022-06-05 00:00:00+00:00,sum(duration_of_sunshine P1D),4.2,hours,False
@@ -3081,7 +3081,7 @@ SN90450:0,2023-06-06 00:00:00+00:00,sum(duration_of_sunshine P1D),0.0,hours,Fals
 SN90450:0,2023-06-07 00:00:00+00:00,sum(duration_of_sunshine P1D),6.8,hours,False
 SN90450:0,2023-06-08 00:00:00+00:00,sum(duration_of_sunshine P1D),1.8,hours,False
 SN90450:0,2023-06-09 00:00:00+00:00,sum(duration_of_sunshine P1D),8.1,hours,False
-SN90450:0,2023-06-10 00:00:00+00:00,sum(duration_of_sunshine P1D),8.2,hours,True
+SN90450:0,2023-06-10 00:00:00+00:00,sum(duration_of_sunshine P1D),8.200000000000001,hours,True
 SN90450:0,2023-06-11 00:00:00+00:00,sum(duration_of_sunshine P1D),8.3,hours,False
 SN90450:0,2023-06-12 00:00:00+00:00,sum(duration_of_sunshine P1D),9.5,hours,False
 SN90450:0,2023-06-13 00:00:00+00:00,sum(duration_of_sunshine P1D),3.2,hours,False

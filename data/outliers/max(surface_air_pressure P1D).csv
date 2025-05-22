@@ -1,0 +1,17 @@
+,sourceId,referenceTimestamp,datatype,value,unit,reason
+0,SN90450:0,2015-12-06 00:00:00+00:00,max(surface_air_pressure P1D),962.1,hPa,zscore_outlier
+1,SN90450:0,2016-01-30 00:00:00+00:00,max(surface_air_pressure P1D),950.1,hPa,zscore_outlier
+2,SN90450:0,2017-02-08 00:00:00+00:00,max(surface_air_pressure P1D),1032.7,hPa,zscore_outlier
+3,SN90450:0,2017-02-09 00:00:00+00:00,max(surface_air_pressure P1D),1033.3,hPa,zscore_outlier
+4,SN90450:0,2018-02-26 00:00:00+00:00,max(surface_air_pressure P1D),1036.1,hPa,zscore_outlier
+5,SN90450:0,2018-02-27 00:00:00+00:00,max(surface_air_pressure P1D),1036.7,hPa,zscore_outlier
+6,SN90450:0,2019-12-06 00:00:00+00:00,max(surface_air_pressure P1D),961.8,hPa,zscore_outlier
+7,SN90450:0,2020-01-03 00:00:00+00:00,max(surface_air_pressure P1D),952.4,hPa,zscore_outlier
+8,SN90450:0,2020-01-08 00:00:00+00:00,max(surface_air_pressure P1D),961.8,hPa,zscore_outlier
+9,SN90450:0,2020-02-10 00:00:00+00:00,max(surface_air_pressure P1D),945.2,hPa,zscore_outlier
+10,SN90450:0,2020-02-11 00:00:00+00:00,max(surface_air_pressure P1D),950.0,hPa,zscore_outlier
+11,SN90450:0,2020-02-17 00:00:00+00:00,max(surface_air_pressure P1D),956.1,hPa,zscore_outlier
+12,SN90450:0,2020-02-22 00:00:00+00:00,max(surface_air_pressure P1D),948.5,hPa,zscore_outlier
+13,SN90450:0,2020-02-23 00:00:00+00:00,max(surface_air_pressure P1D),959.3,hPa,zscore_outlier
+14,SN90450:0,2021-04-05 00:00:00+00:00,max(surface_air_pressure P1D),958.2,hPa,zscore_outlier
+15,SN90450:0,2024-02-03 00:00:00+00:00,max(surface_air_pressure P1D),958.3,hPa,zscore_outlier

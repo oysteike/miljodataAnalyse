@@ -1,0 +1,4 @@
+,sourceId,referenceTimestamp,datatype,value,unit,reason
+0,SN90450:0,2018-07-30 06:00:00+00:00,mean(air_temperature P1D),24.7,degC,zscore_outlier
+1,SN90450:0,2022-06-28 00:00:00+00:00,mean(air_temperature P1D),25.1,degC,zscore_outlier
+2,SN90450:0,2022-06-29 06:00:00+00:00,mean(air_temperature P1D),25.8,degC,zscore_outlier

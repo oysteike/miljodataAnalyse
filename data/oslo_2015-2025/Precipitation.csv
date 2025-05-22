@@ -288,7 +288,7 @@ SN90450:0,2015-10-13 18:00:00+00:00,sum(precipitation_amount P1D),8.8,mm,False
 SN90450:0,2015-10-14 18:00:00+00:00,sum(precipitation_amount P1D),4.5,mm,False
 SN90450:0,2015-10-15 18:00:00+00:00,sum(precipitation_amount P1D),7.9,mm,False
 SN90450:0,2015-10-16 18:00:00+00:00,sum(precipitation_amount P1D),17.1,mm,False
-SN90450:0,2015-10-17 18:00:00+00:00,sum(precipitation_amount P1D),15.850000000000001,mm,True
+SN90450:0,2015-10-17 18:00:00+00:00,sum(precipitation_amount P1D),15.85,mm,True
 SN90450:0,2015-10-18 18:00:00+00:00,sum(precipitation_amount P1D),14.6,mm,False
 SN90450:0,2015-10-19 18:00:00+00:00,sum(precipitation_amount P1D),0.2,mm,False
 SN90450:0,2015-10-20 18:00:00+00:00,sum(precipitation_amount P1D),0.7,mm,False
@@ -727,7 +727,7 @@ SN90450:0,2016-12-25 18:00:00+00:00,sum(precipitation_amount P1D),1.6,mm,False
 SN90450:0,2016-12-26 18:00:00+00:00,sum(precipitation_amount P1D),2.3,mm,False
 SN90450:0,2016-12-27 18:00:00+00:00,sum(precipitation_amount P1D),11.5,mm,False
 SN90450:0,2016-12-28 18:00:00+00:00,sum(precipitation_amount P1D),9.9,mm,False
-SN90450:0,2016-12-29 18:00:00+00:00,sum(precipitation_amount P1D),9.600000000000001,mm,True
+SN90450:0,2016-12-29 18:00:00+00:00,sum(precipitation_amount P1D),9.6,mm,True
 SN90450:0,2016-12-30 18:00:00+00:00,sum(precipitation_amount P1D),9.3,mm,False
 SN90450:0,2016-12-31 18:00:00+00:00,sum(precipitation_amount P1D),3.2,mm,False
 SN90450:0,2017-01-01 18:00:00+00:00,sum(precipitation_amount P1D),12.0,mm,False
@@ -1032,7 +1032,7 @@ SN90450:0,2017-10-26 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2017-10-27 18:00:00+00:00,sum(precipitation_amount P1D),5.0,mm,False
 SN90450:0,2017-10-28 18:00:00+00:00,sum(precipitation_amount P1D),8.6,mm,False
 SN90450:0,2017-10-29 18:00:00+00:00,sum(precipitation_amount P1D),8.1,mm,False
-SN90450:0,2017-10-30 18:00:00+00:00,sum(precipitation_amount P1D),10.3,mm,True
+SN90450:0,2017-10-30 18:00:00+00:00,sum(precipitation_amount P1D),10.299999999999999,mm,True
 SN90450:0,2017-10-31 18:00:00+00:00,sum(precipitation_amount P1D),12.5,mm,False
 SN90450:0,2017-11-01 18:00:00+00:00,sum(precipitation_amount P1D),0.2,mm,False
 SN90450:0,2017-11-02 18:00:00+00:00,sum(precipitation_amount P1D),5.0,mm,False
@@ -1068,7 +1068,7 @@ SN90450:0,2017-12-01 18:00:00+00:00,sum(precipitation_amount P1D),5.3,mm,False
 SN90450:0,2017-12-02 18:00:00+00:00,sum(precipitation_amount P1D),4.0,mm,False
 SN90450:0,2017-12-03 18:00:00+00:00,sum(precipitation_amount P1D),6.9,mm,False
 SN90450:0,2017-12-04 18:00:00+00:00,sum(precipitation_amount P1D),2.7,mm,False
-SN90450:0,2017-12-05 18:00:00+00:00,sum(precipitation_amount P1D),6.15,mm,True
+SN90450:0,2017-12-05 18:00:00+00:00,sum(precipitation_amount P1D),6.1499999999999995,mm,True
 SN90450:0,2017-12-06 18:00:00+00:00,sum(precipitation_amount P1D),9.6,mm,False
 SN90450:0,2017-12-07 18:00:00+00:00,sum(precipitation_amount P1D),0.4,mm,False
 SN90450:0,2017-12-08 18:00:00+00:00,sum(precipitation_amount P1D),0.5,mm,False
@@ -1268,7 +1268,7 @@ SN90450:0,2018-06-19 18:00:00+00:00,sum(precipitation_amount P1D),0.7,mm,False
 SN90450:0,2018-06-20 18:00:00+00:00,sum(precipitation_amount P1D),9.3,mm,False
 SN90450:0,2018-06-21 18:00:00+00:00,sum(precipitation_amount P1D),4.0,mm,False
 SN90450:0,2018-06-22 18:00:00+00:00,sum(precipitation_amount P1D),1.6,mm,False
-SN90450:0,2018-06-23 18:00:00+00:00,sum(precipitation_amount P1D),2.9000000000000004,mm,True
+SN90450:0,2018-06-23 18:00:00+00:00,sum(precipitation_amount P1D),2.9,mm,True
 SN90450:0,2018-06-24 18:00:00+00:00,sum(precipitation_amount P1D),4.2,mm,False
 SN90450:0,2018-06-25 18:00:00+00:00,sum(precipitation_amount P1D),0.4,mm,False
 SN90450:0,2018-06-26 18:00:00+00:00,sum(precipitation_amount P1D),6.5,mm,False
@@ -1471,7 +1471,7 @@ SN90450:0,2019-01-08 18:00:00+00:00,sum(precipitation_amount P1D),10.5,mm,False
 SN90450:0,2019-01-09 18:00:00+00:00,sum(precipitation_amount P1D),7.2,mm,False
 SN90450:0,2019-01-10 18:00:00+00:00,sum(precipitation_amount P1D),13.1,mm,False
 SN90450:0,2019-01-11 18:00:00+00:00,sum(precipitation_amount P1D),17.8,mm,False
-SN90450:0,2019-01-12 18:00:00+00:00,sum(precipitation_amount P1D),12.400000000000002,mm,True
+SN90450:0,2019-01-12 18:00:00+00:00,sum(precipitation_amount P1D),12.4,mm,True
 SN90450:0,2019-01-13 18:00:00+00:00,sum(precipitation_amount P1D),7.0,mm,False
 SN90450:0,2019-01-14 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2019-01-15 18:00:00+00:00,sum(precipitation_amount P1D),2.2,mm,False
@@ -1550,7 +1550,7 @@ SN90450:0,2019-03-28 18:00:00+00:00,sum(precipitation_amount P1D),10.6,mm,False
 SN90450:0,2019-03-29 18:00:00+00:00,sum(precipitation_amount P1D),9.6,mm,False
 SN90450:0,2019-03-30 18:00:00+00:00,sum(precipitation_amount P1D),13.4,mm,False
 SN90450:0,2019-03-31 18:00:00+00:00,sum(precipitation_amount P1D),6.9,mm,False
-SN90450:0,2019-04-01 18:00:00+00:00,sum(precipitation_amount P1D),8.55,mm,True
+SN90450:0,2019-04-01 18:00:00+00:00,sum(precipitation_amount P1D),8.549999999999999,mm,True
 SN90450:0,2019-04-02 18:00:00+00:00,sum(precipitation_amount P1D),10.2,mm,False
 SN90450:0,2019-04-03 18:00:00+00:00,sum(precipitation_amount P1D),4.5,mm,False
 SN90450:0,2019-04-04 18:00:00+00:00,sum(precipitation_amount P1D),3.9,mm,False
@@ -1794,7 +1794,7 @@ SN90450:0,2019-11-27 18:00:00+00:00,sum(precipitation_amount P1D),1.3,mm,False
 SN90450:0,2019-11-28 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2019-11-29 18:00:00+00:00,sum(precipitation_amount P1D),1.5,mm,False
 SN90450:0,2019-11-30 18:00:00+00:00,sum(precipitation_amount P1D),16.7,mm,False
-SN90450:0,2019-12-01 18:00:00+00:00,sum(precipitation_amount P1D),12.899999999999999,mm,True
+SN90450:0,2019-12-01 18:00:00+00:00,sum(precipitation_amount P1D),12.9,mm,True
 SN90450:0,2019-12-02 18:00:00+00:00,sum(precipitation_amount P1D),9.1,mm,True
 SN90450:0,2019-12-03 18:00:00+00:00,sum(precipitation_amount P1D),5.3,mm,False
 SN90450:0,2019-12-04 18:00:00+00:00,sum(precipitation_amount P1D),3.5,mm,True
@@ -2061,7 +2061,7 @@ SN90450:0,2020-08-20 18:00:00+00:00,sum(precipitation_amount P1D),1.9,mm,False
 SN90450:0,2020-08-21 18:00:00+00:00,sum(precipitation_amount P1D),0.3,mm,False
 SN90450:0,2020-08-22 18:00:00+00:00,sum(precipitation_amount P1D),2.7,mm,False
 SN90450:0,2020-08-23 18:00:00+00:00,sum(precipitation_amount P1D),6.5,mm,False
-SN90450:0,2020-08-24 18:00:00+00:00,sum(precipitation_amount P1D),4.9,mm,True
+SN90450:0,2020-08-24 18:00:00+00:00,sum(precipitation_amount P1D),4.8999999999999995,mm,True
 SN90450:0,2020-08-25 18:00:00+00:00,sum(precipitation_amount P1D),3.3,mm,False
 SN90450:0,2020-08-26 18:00:00+00:00,sum(precipitation_amount P1D),0.9,mm,False
 SN90450:0,2020-08-27 18:00:00+00:00,sum(precipitation_amount P1D),2.8,mm,False
@@ -2090,7 +2090,7 @@ SN90450:0,2020-09-18 18:00:00+00:00,sum(precipitation_amount P1D),5.3,mm,True
 SN90450:0,2020-09-19 18:00:00+00:00,sum(precipitation_amount P1D),10.1,mm,False
 SN90450:0,2020-09-20 18:00:00+00:00,sum(precipitation_amount P1D),9.2,mm,False
 SN90450:0,2020-09-21 18:00:00+00:00,sum(precipitation_amount P1D),6.433333333333333,mm,True
-SN90450:0,2020-09-22 18:00:00+00:00,sum(precipitation_amount P1D),3.666666666666666,mm,True
+SN90450:0,2020-09-22 18:00:00+00:00,sum(precipitation_amount P1D),3.6666666666666665,mm,True
 SN90450:0,2020-09-23 18:00:00+00:00,sum(precipitation_amount P1D),0.9,mm,False
 SN90450:0,2020-09-24 18:00:00+00:00,sum(precipitation_amount P1D),2.9,mm,False
 SN90450:0,2020-09-25 18:00:00+00:00,sum(precipitation_amount P1D),1.6,mm,False
@@ -2742,7 +2742,7 @@ SN90450:0,2022-07-02 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2022-07-03 18:00:00+00:00,sum(precipitation_amount P1D),10.2,mm,False
 SN90450:0,2022-07-04 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2022-07-05 18:00:00+00:00,sum(precipitation_amount P1D),0.8,mm,False
-SN90450:0,2022-07-06 18:00:00+00:00,sum(precipitation_amount P1D),1.4500000000000002,mm,True
+SN90450:0,2022-07-06 18:00:00+00:00,sum(precipitation_amount P1D),1.45,mm,True
 SN90450:0,2022-07-07 18:00:00+00:00,sum(precipitation_amount P1D),2.1,mm,False
 SN90450:0,2022-07-08 18:00:00+00:00,sum(precipitation_amount P1D),3.9,mm,False
 SN90450:0,2022-07-09 18:00:00+00:00,sum(precipitation_amount P1D),0.6,mm,False
@@ -2753,7 +2753,7 @@ SN90450:0,2022-07-13 18:00:00+00:00,sum(precipitation_amount P1D),0.6,mm,False
 SN90450:0,2022-07-14 18:00:00+00:00,sum(precipitation_amount P1D),0.6,mm,False
 SN90450:0,2022-07-15 18:00:00+00:00,sum(precipitation_amount P1D),0.6,mm,True
 SN90450:0,2022-07-16 18:00:00+00:00,sum(precipitation_amount P1D),0.6,mm,False
-SN90450:0,2022-07-17 18:00:00+00:00,sum(precipitation_amount P1D),0.4,mm,True
+SN90450:0,2022-07-17 18:00:00+00:00,sum(precipitation_amount P1D),0.39999999999999997,mm,True
 SN90450:0,2022-07-18 18:00:00+00:00,sum(precipitation_amount P1D),0.2,mm,False
 SN90450:0,2022-07-19 18:00:00+00:00,sum(precipitation_amount P1D),0.2,mm,False
 SN90450:0,2022-07-20 18:00:00+00:00,sum(precipitation_amount P1D),0.1,mm,False
@@ -3514,7 +3514,7 @@ SN90450:0,2024-08-12 18:00:00+00:00,sum(precipitation_amount P1D),2.8,mm,False
 SN90450:0,2024-08-13 18:00:00+00:00,sum(precipitation_amount P1D),0.1,mm,False
 SN90450:0,2024-08-14 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2024-08-15 18:00:00+00:00,sum(precipitation_amount P1D),4.0,mm,False
-SN90450:0,2024-08-16 18:00:00+00:00,sum(precipitation_amount P1D),2.05,mm,True
+SN90450:0,2024-08-16 18:00:00+00:00,sum(precipitation_amount P1D),2.0500000000000003,mm,True
 SN90450:0,2024-08-17 18:00:00+00:00,sum(precipitation_amount P1D),0.1,mm,False
 SN90450:0,2024-08-18 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2024-08-19 18:00:00+00:00,sum(precipitation_amount P1D),0.15,mm,True
@@ -3613,7 +3613,7 @@ SN90450:0,2024-11-19 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2024-11-20 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2024-11-21 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2024-11-22 18:00:00+00:00,sum(precipitation_amount P1D),4.3,mm,False
-SN90450:0,2024-11-23 18:00:00+00:00,sum(precipitation_amount P1D),9.149999999999999,mm,True
+SN90450:0,2024-11-23 18:00:00+00:00,sum(precipitation_amount P1D),9.15,mm,True
 SN90450:0,2024-11-24 18:00:00+00:00,sum(precipitation_amount P1D),14.0,mm,False
 SN90450:0,2024-11-25 18:00:00+00:00,sum(precipitation_amount P1D),1.0,mm,False
 SN90450:0,2024-11-26 18:00:00+00:00,sum(precipitation_amount P1D),3.2,mm,False
@@ -3630,7 +3630,7 @@ SN90450:0,2024-12-06 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False
 SN90450:0,2024-12-07 18:00:00+00:00,sum(precipitation_amount P1D),0.3,mm,False
 SN90450:0,2024-12-08 18:00:00+00:00,sum(precipitation_amount P1D),6.8,mm,False
 SN90450:0,2024-12-09 18:00:00+00:00,sum(precipitation_amount P1D),11.2,mm,False
-SN90450:0,2024-12-10 18:00:00+00:00,sum(precipitation_amount P1D),12.8,mm,True
+SN90450:0,2024-12-10 18:00:00+00:00,sum(precipitation_amount P1D),12.799999999999999,mm,True
 SN90450:0,2024-12-11 18:00:00+00:00,sum(precipitation_amount P1D),14.4,mm,False
 SN90450:0,2024-12-12 18:00:00+00:00,sum(precipitation_amount P1D),12.4,mm,False
 SN90450:0,2024-12-13 18:00:00+00:00,sum(precipitation_amount P1D),0.0,mm,False

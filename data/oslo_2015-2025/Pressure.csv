@@ -1825,7 +1825,7 @@ SN90450:0,2019-12-30 00:00:00+00:00,max(surface_air_pressure P1D),978.8,hPa,Fals
 SN90450:0,2019-12-31 00:00:00+00:00,max(surface_air_pressure P1D),983.0,hPa,False
 SN90450:0,2020-01-01 00:00:00+00:00,max(surface_air_pressure P1D),981.5,hPa,False
 SN90450:0,2020-01-02 00:00:00+00:00,max(surface_air_pressure P1D),967.8,hPa,False
-SN90450:0,2020-01-03 00:00:00+00:00,max(surface_air_pressure P1D),979.0999999999999,hPa,True
+SN90450:0,2020-01-03 00:00:00+00:00,max(surface_air_pressure P1D),979.1,hPa,True
 SN90450:0,2020-01-04 00:00:00+00:00,max(surface_air_pressure P1D),990.4,hPa,False
 SN90450:0,2020-01-05 00:00:00+00:00,max(surface_air_pressure P1D),993.1,hPa,False
 SN90450:0,2020-01-06 00:00:00+00:00,max(surface_air_pressure P1D),983.4,hPa,False
