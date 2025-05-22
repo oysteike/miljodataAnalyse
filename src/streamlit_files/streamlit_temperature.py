@@ -1,8 +1,9 @@
 import streamlit as st
 import os
 import sys
-import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.express as px
+
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src')))
 from processing.temperature_calculations import analyze_temperature_progress
 
@@ -22,31 +23,36 @@ def show():
     st.write(f"På rett spor: {'Ja' if progress['on_track'] else 'Nei'}")
     st.write(f"Nødvendig reduksjon per år: {reduction_per_year:.2f} °C")
 
-    st.subheader("Temperaturavvik siden Parisavtalen (baseline: 1990-2020)")
+    st.subheader("Temperaturavvik siden Parisavtalen (baseline: 1990–2020)")
+    st.write("Rød linje representerer endringen i temperatur vi ønsker å holde oss under. Mens prikkene viser avviket fra normal temperatur i Norge.")
 
-    # Månedlig visning
-    fig1, ax1 = plt.subplots(figsize=(12, 6))
-    ax1.scatter(df['referenceTimestamp'], df['anomaly'], color='blue', alpha=0.6, label='Månedlig avvik')
-    ax1.axhline(y=target, color='red', linestyle='--', label=f'Mål: {target} °C')
-    ax1.set_title("Månedlig temperaturavvik")
-    ax1.set_xlabel("År")
-    ax1.set_ylabel("Avvik fra normal (°C)")
-    ax1.legend()
-    ax1.grid(True)
-    st.pyplot(fig1)
+    # Plotter månedlig gjennomsnittelig temperaturavvik
+    fig_monthly = px.scatter(
+        df,
+        x='referenceTimestamp',
+        y='anomaly',
+        title="Månedlig temperaturavvik",
+        labels={'referenceTimestamp': 'År', 'anomaly': 'Avvik fra normal (°C)'},
+        color_discrete_sequence=['blue'],
+        opacity=0.6
+    )
+    fig_monthly.add_hline(y=target, line_dash='dash', line_color='red', annotation_text=f"Mål: {target} °C", annotation_position="top left")
+    st.plotly_chart(fig_monthly, use_container_width=True)
 
-    # Årlig visning
+    # Plotter årlig gjennomsnittlig temperaturavvik
     df['year'] = df['referenceTimestamp'].dt.year
     annual_df = df.groupby('year')['anomaly'].mean().reset_index()
 
-    fig2, ax2 = plt.subplots(figsize=(12, 6))
-    ax2.scatter(annual_df['year'], annual_df['anomaly'], color='green', alpha=0.8, label='Årlig snitt')
-    ax2.axhline(y=target, color='red', linestyle='--', label=f'Mål: {target} °C')
-    ax2.set_title("Årlig temperaturavvik")
-    ax2.set_xlabel("År")
-    ax2.set_ylabel("Avvik fra normal (°C)")
-    ax2.legend()
-    ax2.grid(True)
-    st.pyplot(fig2)
+    fig_annual = px.scatter(
+        annual_df,
+        x='year',
+        y='anomaly',
+        title="Årlig temperaturavvik",
+        labels={'year': 'År', 'anomaly': 'Avvik fra normal (°C)'},
+        color_discrete_sequence=['green'],
+        opacity=0.8
+    )
+    fig_annual.add_hline(y=target, line_dash='dash', line_color='red', annotation_text=f"Mål: {target} °C", annotation_position="top left")
+    st.plotly_chart(fig_annual, use_container_width=True)
 
     st.write("NB! Denne analysen er så forenklet at den ikke er egnet for å trekke konklusjoner om klimaendringer. Justeringer i temperatur må ses i en større sammenheng enn kun målinger fra enkelte måneder i enkelte land. Dette er kun med på å illustrere hvordan en slik analyse kan gjøres.")

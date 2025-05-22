@@ -37,8 +37,16 @@ def show():
     st.write(f"Antall datapunkter vist: {len(df_filtered)}")
     st.write(df_filtered.head())
 
-    correlation = calculate_correlation(df) # Bruker fortsatt hele datasettet til korrelasjon
-    st.write(correlation)
+    corr = calculate_correlation(df) # Bruker fortsatt hele datasettet til korrelasjon
+    if abs(corr) < 0.3:
+        st.warning(f"Korrelasjonen er svak; {corr}. Det er ingen klar sammenheng i datasettene")
+    elif abs(corr) > 0.7:
+        st.success("Det er sterk sammenheng mellom datasettene! Du kan betrakte de som avhengige")
+    if corr > 0:
+        st.info(f"Det er en positiv sammenheng i datasettene. Korrelasjone har verdi: {corr}") 
+    else:
+        st.info(f"Det er en negativ sammenheng i datasettene. Korrelasjone har verdi: {corr}")
+
 
     fig1, fig2 = plot_weather_dashboard(df_filtered) # Bruker bare de filtrerte datapunktene til å plotte
     st.plotly_chart(fig1)

@@ -83,7 +83,6 @@ def required_reduction(annual_anomaly_df, target=TARGET_INCREASE):
 
 def analyze_temperature_progress(TEMPERATURE_DIR):
     """
-    Kjør full analysepipeline:
     - Last data
     - Beregn månedlige anomalier
     - Vurder progresjon årlig

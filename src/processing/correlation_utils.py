@@ -49,19 +49,8 @@ def calculate_correlation(df, var1='value_1', var2='value_2'):
     Beregner korrelasjonen mellom to variabler og gir en vurdering av styrke, retning og logisk sammenheng.
     """
     if df.empty or var1 not in df.columns or var2 not in df.columns:
-        return "Data mangler eller kolonner finnes ikke."
+        return None
 
     corr = df[var1].corr(df[var2])
 
-    if abs(corr) < 0.3:
-        strength = "svak"
-    elif abs(corr) < 0.7:
-        strength = "moderat"
-    else:
-        strength = "sterk"
-
-    direction = "positiv" if corr > 0 else "negativ"
-    comment = f"Korrelasjonen mellom {var1} og {var2} er {direction} og {strength} (r = {corr:.2f})."
-
-    logical = "Dette er en logisk sammenheng." if strength != "svak" else "Sammenhengen er svak og kan være tilfeldig."
-    return comment + " " + logical
+    return corr
