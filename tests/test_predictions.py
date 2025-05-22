@@ -1,83 +1,49 @@
 import unittest
-import os
 import pandas as pd
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src')))
-from processing.predictions import predict_from_csv, read_csv_data, resample_and_engineer_features, train_linear_model, create_forecast
+import numpy as np
+import os
+from tempfile import NamedTemporaryFile
 
-class TestPredictions(unittest.TestCase):
+from processing.predictions import predict_from_csv
+
+class TestPredictionPipeline(unittest.TestCase):
+    
     def setUp(self):
-        """
-        Initialiserer testdata og parametere.
-        """
-        self.test_csv = "test_data.csv"
-        self.freq = "MS"  # Månedlig frekvens
-        self.periods = 12  # Antall perioder for prediksjon
-
-        # Opprett en test CSV-fil
-        data = {
-            'sourceId': ['SN90450'] * 24,
-            'referenceTimestamp': pd.date_range(start="2020-01-01", periods=24, freq="MS"),
-            'value': [i for i in range(24)]
-        }
-        df = pd.DataFrame(data)
-        df.to_csv(self.test_csv, index=False)
+        # Lag en midlertidig CSV med syntetiske data
+        self.temp_file = NamedTemporaryFile(delete=False, suffix=".csv", mode='w', newline='')
+        df = pd.DataFrame({
+            'sourceId': ['test_station'] * 24,
+            'referenceTimestamp': pd.date_range('2022-01-01', periods=24, freq='MS'),
+            'value': np.linspace(50, 100, 24)
+        })
+        df.to_csv(self.temp_file.name, index=False)
+        self.filename = self.temp_file.name
 
     def tearDown(self):
-        """
-        Rydder opp etter testene.
-        """
-        if os.path.exists(self.test_csv):
-            os.remove(self.test_csv)
+        # Fjern midlertidig fil
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
-    def test_read_csv_data(self):
-        """
-        Tester at CSV-data leses korrekt.
-        """
-        df = read_csv_data(self.test_csv)
-        self.assertFalse(df.empty, "DataFrame er tom")
-        self.assertIn('value', df.columns, "Kolonnen 'value' mangler")
-        self.assertIn('referenceTimestamp', df.columns, "Kolonnen 'referenceTimestamp' mangler")
+    def test_predict_from_csv_returns_expected_structure(self):
+        forecast_df, historical_df, evaluation_df, mse = predict_from_csv(self.filename, freq='MS', periods=6)
 
-    def test_resample_and_engineer_features(self):
-        """
-        Tester at funksjoner for resampling og feature engineering fungerer.
-        """
-        df = read_csv_data(self.test_csv)
-        df, start_time, period_len = resample_and_engineer_features(df, self.freq)
-        self.assertIn('time_numeric', df.columns, "Kolonnen 'time_numeric' mangler")
-        self.assertIn('season_sin', df.columns, "Kolonnen 'season_sin' mangler")
-        self.assertIn('season_cos', df.columns, "Kolonnen 'season_cos' mangler")
+        # Sjekk forecast-df
+        self.assertEqual(len(forecast_df), 6)
+        self.assertIn('timestamp', forecast_df.columns)
+        self.assertIn('predicted_value', forecast_df.columns)
 
-    def test_train_linear_model(self):
-        """
-        Tester at lineær modell trenes uten feil.
-        """
-        df = read_csv_data(self.test_csv)
-        df, _, _ = resample_and_engineer_features(df, self.freq)
-        model = train_linear_model(df)
-        self.assertIsNotNone(model, "Modellen ble ikke opprettet")
+        # Sjekk historisk data
+        self.assertFalse(historical_df.empty)
+        self.assertIn('historical_value', historical_df.columns)
+        self.assertIn('referenceTimestamp', historical_df.columns)
 
-    def test_create_forecast(self):
-        """
-        Tester at prediksjoner opprettes korrekt.
-        """
-        df = read_csv_data(self.test_csv)
-        df, start_time, period_len = resample_and_engineer_features(df, self.freq)
-        model = train_linear_model(df)
-        forecast_df = create_forecast(model, start_time, df.index.max(), self.freq, self.periods, period_len)
-        self.assertFalse(forecast_df.empty, "Forecast DataFrame er tom")
-        self.assertIn('predicted_value', forecast_df.columns, "Kolonnen 'predicted_value' mangler")
+        # Sjekk evalueringsdata
+        self.assertIn('actual_value', evaluation_df.columns)
+        self.assertIn('predicted_value', evaluation_df.columns)
 
-    def test_predict_from_csv(self):
-        """
-        Tester hele prediksjonsprosessen fra CSV.
-        """
-        forecast_df, historical_df = predict_from_csv(self.test_csv, self.freq, self.periods)
-        self.assertFalse(forecast_df.empty, "Forecast DataFrame er tom")
-        self.assertFalse(historical_df.empty, "Historical DataFrame er tom")
-        self.assertIn('predicted_value', forecast_df.columns, "Kolonnen 'predicted_value' mangler")
-        self.assertIn('historical_value', historical_df.columns, "Kolonnen 'historical_value' mangler")
+        # Sjekk at MSE er et tall
+        self.assertIsInstance(mse, float)
+        self.assertGreaterEqual(mse, 0)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
