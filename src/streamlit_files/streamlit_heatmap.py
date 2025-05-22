@@ -6,8 +6,14 @@ from processing.heatmap_utils import load_data, filter_data, interpolate_data, m
 
 def show():
     st.title("Interpolert heatmap for nedbør i januar 2025")
-    st.write("Visualiserer interpolerte værdata for nedbør i januar 2025. Velg værtype og dato for å se dataene i kartet. Noen av områdene vil være vite på grunn av mangledne data og ikke temperatur. Vær oppmerksom på at interpolering ikke gir nøyaktige resulatater.")
-  
+    st.markdown("""
+    **Visualiserer interpolerte værdata for nedbør i januar 2025.**
+    Med data fra hele Norge lages et interaktivt heatmap.
+    Velg værtype og dato for å se dataene i kartet.  
+    Noen av områdene vil være hvite på grunn av manglende data – denne oversikten er altså mindre fullstendig.
+
+     *Vær oppmerksom på at interpolering ikke gir nøyaktige resultater.*
+    """)  
     current_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(current_dir, '..', '..', 'data', 'Jan_2025')
 

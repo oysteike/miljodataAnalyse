@@ -35,7 +35,6 @@ def show():
     df_filtered = df[(pd.to_datetime(df['referenceTimestamp']) >= start_date_ts) & (pd.to_datetime(df['referenceTimestamp']) <= end_date_ts)]
 
     st.write(f"Antall datapunkter vist: {len(df_filtered)}")
-    st.write(df_filtered.head())
 
     corr = calculate_correlation(df) # Bruker fortsatt hele datasettet til korrelasjon
     if abs(corr) < 0.3:
@@ -51,3 +50,5 @@ def show():
     fig1, fig2 = plot_weather_dashboard(df_filtered) # Bruker bare de filtrerte datapunktene til å plotte
     st.plotly_chart(fig1)
     st.plotly_chart(fig2)
+
+    st.dataframe(df_filtered)

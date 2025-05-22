@@ -21,13 +21,14 @@ if valg == "Hjem":
     st.title("Værdata og prediksjoner")
     st.write("Velg en funksjon fra menyen til venstre for å begynne.")
     st.markdown("""
-    ### Hva viser denne appen?
+    ## Hva viser denne appen?
 
     Her får du innsikt i værdata fra hele Norge:
 
     - **Visualiseringer**: Heatmap og trendgrafer
     - **Prediksjoner**: Fremtidig utvikling i værdata
     - **Interaktive valg**: Velg værtype, dato og mer
+    - **Sammenligning**: Sammenlign værdata fra ulike kilder
     """)
 elif valg == "Interpolert heatmap":
     show_heatmap()
