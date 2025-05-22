@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import sys
+from PIL import Image
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 src_path = os.path.join(current_dir, "src")
@@ -30,6 +31,7 @@ if valg == "Hjem":
     - **Interaktive valg**: Velg værtype, dato og mer
     - **Sammenligning**: Sammenlign værdata fra ulike kilder
     """)
+    st.image(Image.open("docs/resoursces/weather.png"), use_container_width=True)
 elif valg == "Interpolert heatmap":
     show_heatmap()
 elif valg == "Fremtidsprediksjon":

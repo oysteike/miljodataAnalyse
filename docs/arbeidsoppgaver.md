@@ -7,15 +7,14 @@
     isuaisere compiled data i Graf
 - Georg
     Dokumentasjon (Kodekvalitet)
+  
     Visuaisere compiled data i Datafiler
 - Beggge
-    Lage en del av nettisden hvor man kan direkte sammenligne data i samme graf (Statistiske metoder)
-    Rense opp i datamappen (Utviklingsmiljø)
-    Bilder på nettside (Utviklingsmiljø)
     Sjekke PEP 8, kommentarer og navngivning (Kodekvalitet)
     Sørge for god nok unntakshåntatering (Kodekvalitet) parameterverifisering??
     Gir forklaring på standardavik og hvordan det bruke i prosjektet. (Statistiske metoder)
     Lage en del av nettisden hvor man direkte sammenligner to/flere grafer
+
 
     
 Ekstraoppgaver     

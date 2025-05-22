@@ -13,7 +13,8 @@ Under er er en liste over hvilke python-pakker som må installeres for å kjøre
     scikit-learn
     scipy
     streamlit
+    pillow
 
 Last inn pakkene ved å kjøre dette i terminal:
-"pip install isodate matplotlib numpy pandas plotly pydeck requests scikit-learn scipy streamlit"
+"pip install isodate matplotlib numpy pandas plotly pydeck requests scikit-learn scipy streamlit pillow"
 
