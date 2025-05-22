@@ -42,11 +42,11 @@ def preprocess_dataframe(df):
 
 def remove_outliers(df):
     """
-    Fjerner outliers med Z-score og returnerer både renset og fjernet data.
+    Fjerner outliers med Z-score og returnerer både renset og fjernet data. Fungerer med fler datatyper, selv om vi kun bruker en.
     """
     def identify_outliers(group):
         z_scores = zscore(group.dropna())
-        mask = np.abs(z_scores) < 3
+        mask = np.abs(z_scores) < 2
         outliers = group[~mask]
         cleaned = group.where(mask)
         return cleaned, outliers

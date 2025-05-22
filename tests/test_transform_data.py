@@ -62,21 +62,30 @@ class TestWeatherDataProcessor(unittest.TestCase):
         self.assertEqual(result['value'].dtype, 'int64')
 
     def test_remove_outliers(self):
-    # Create test data
+        # Eksempeldata med én ekstrem outlier
         data = {
-        'sourceId': ['A', 'A', 'A'],
-        'referenceTimestamp': ['2022-01-01T00:00:00', '2022-01-01T00:00:00', '2022-01-01T00:00:00'],
-        'datatype': ['temperature', 'temperature', 'temperature'],
-        'value': [10,20, np.nan],
-        'unit': ['°C', '°C', '°C']
+            'datatype': ['temp'] * 6,
+            'value': [20, 21, 19, 22, 20, 2050],  # 2050 er outlier
+            'referenceTimestamp': pd.date_range("2024-01-01", periods=6, freq='D'),
+            'sourceId': ['station1'] * 6,
+            'unit': ['C'] * 6
         }
         df = pd.DataFrame(data)
 
-        # Kjør funksjonen
-        df = remove_outliers(df)
+        cleaned_df, outliers_df = remove_outliers(df)
 
-        # Sjekk resultatet
-        self.assertTrue(df['value'].isna().any())
+        # Det skal være én outlier
+        self.assertEqual(len(outliers_df), 1)
+        self.assertEqual(outliers_df.iloc[0]['value'], 2050)
+
+        # Den rensede DataFrame skal ha NaN i stedet for outlier
+        cleaned_val = cleaned_df.loc[cleaned_df['value'].isna()]
+        self.assertEqual(len(cleaned_val), 1)
+        self.assertEqual(cleaned_val.iloc[0]['referenceTimestamp'], pd.Timestamp("2024-01-06"))
+
+        # Totalt antall rader skal være lik originalen
+        self.assertEqual(len(cleaned_df), 6)
+
 
     def test_resample_and_aggregate(self):
         # Create test data
