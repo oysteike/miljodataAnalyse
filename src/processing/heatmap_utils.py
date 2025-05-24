@@ -62,11 +62,11 @@ def interpolate_data(df, cutoff_km):
     """    
     required_cols = {LON, LAT, 'plot_value'}
     if not required_cols.issubset(df.columns):
-        return df_clean  # Mangler nødvendige kolonner
-   
+        return pd.DataFrame()  # Mangler nødvendige kolonner
+    
     df_clean = df.dropna(subset=[LON, LAT, 'plot_value'])
     if len(df_clean) < 3:
-        return df_clean  # Ikke nok data til interpolasjon
+        return pd.DataFrame()  # Ikke nok data til interpolasjon
 
     # Lag et jevnt grid over området
     grid_res=200
@@ -80,7 +80,17 @@ def interpolate_data(df, cutoff_km):
     values = df_clean['plot_value'].values
 
     # Interpoler verdier til grid-punktene
-    grid_z = griddata(points, values, (grid_x, grid_y), method='cubic')
+    try:
+        grid_z = griddata(points, values, (grid_x, grid_y), method='cubic')
+    except Exception as e:
+        print(f"Interpolasjon feilet med 'cubic': {e}")
+        # Faller tilbake på lineær interpolasjon
+        try:
+            grid_z = griddata(points, values, (grid_x, grid_y), method='linear')
+        except Exception as e:
+            print(f"Interpolasjon feilet med 'cubic': {e}")
+            return pd.DataFrame()  
+
 
     # Avstand fra hvert gridpunkt til nærmeste datapunkt
     tree = cKDTree(points)
