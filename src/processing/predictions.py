@@ -6,6 +6,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 
 def read_csv_data(filename):
+    """
+    Leser inn data fra en CSV-fil og returnerer en DataFrame.
+    Fjerner rader med manglende 'sourceId' og konverterer tidsstempel og verdier til riktige typer.
+    """
     try:
         df = pd.read_csv(filename)
         df = df[df['sourceId'].notna()]
@@ -19,6 +23,10 @@ def read_csv_data(filename):
 
 
 def resample_and_engineer_features(df, freq):
+    """
+    Resamplerer DataFrame til ønsket frekvens og lager tidsrelaterte funksjoner.
+    Frekvensen kan være 'MS' (månedlig start) eller 'W' (ukentlig).
+    """
     if df.empty:
         raise ValueError("DataFrame er tom – kan ikke lage features.")
 
@@ -42,6 +50,9 @@ def resample_and_engineer_features(df, freq):
 
 
 def train_and_evaluate_model(df):
+    """
+    Bruker datasettet til å trene en regresjonsmodell og evaluerer egen ytelse.
+    """
     if len(df) < 5:
         raise ValueError("Datasettet er for lite til å trene en modell.")
     try:
@@ -75,6 +86,9 @@ def train_and_evaluate_model(df):
         raise RuntimeError(f"Feil ved trening og evaluering av modellen: {e}")
 
 def create_forecast(model, start_time, last_time, freq, periods, period_len, scaler):
+    """
+    Oppretter utrykket som skal brukes for å forutsi fremtidige verdier.
+    """
     try:
         future_dates = pd.date_range(start=last_time + pd.Timedelta(days=1), periods=periods, freq=freq)
         time_numeric = (future_dates - start_time).total_seconds()
@@ -96,6 +110,9 @@ def create_forecast(model, start_time, last_time, freq, periods, period_len, sca
 
 
 def predict_from_csv(filename, freq, periods):
+    """
+    Kjører alle funksjonene.
+    """
     df = read_csv_data(filename)
     df, start_time, period_len = resample_and_engineer_features(df, freq)
     model, mse, evaluation_df, scaler = train_and_evaluate_model(df)

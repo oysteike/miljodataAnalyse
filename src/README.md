@@ -34,6 +34,7 @@ Sammenligner og analyserer korrelasjon mellom to ulike datasett.
 ---
 
 ## streamlit_files
+Disse fillene gjør kun visuelle opptreden, plot og streamlit fumkjosner for brukervennlig innteraksjon.
 
 ### `streamlit_temperature.py`
 Streamlit-app for å vise temperaturutvikling og avvik.
