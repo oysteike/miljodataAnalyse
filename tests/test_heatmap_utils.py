@@ -10,13 +10,12 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src', 'processing'
 from heatmap_utils import (
     load_data, filter_data, interpolate_data,
     make_map, plot_legend,
-    LON, LAT, VALUE
 )
 
 class TestWeatherMappingFunctions(unittest.TestCase):
 
     def setUp(self):
-        # Lag en liten test-DataFrame
+        # Lag en test-DataFrame
         self.df = pd.DataFrame({
             "referenceTimestamp": pd.to_datetime(["2025-01-15", "2025-01-15", "2025-01-16", "2025-01-17"]),
             "lon": [10.0, 10.1, 10.0, 10.1],
@@ -26,22 +25,25 @@ class TestWeatherMappingFunctions(unittest.TestCase):
         })
 
     def test_filter_data_positive(self):
+        # Test at filter_data returnerer riktig antall rader og kolonner
         filtered = filter_data(self.df, "nedbør", "2025-01-15", 20)
         self.assertEqual(len(filtered), 2)
         self.assertIn("plot_value", filtered.columns)
 
-    def test_filter_data_negative(self):
         filtered = filter_data(self.df, "nedbør", "2025-01-18", 20)
         self.assertEqual(len(filtered), 0)
 
-    def test_interpolate_data_positive(self):
+    def test_interpolate_data(self):
+        # Test at interpolate_data returnerer en DataFrame med interpolerte verdier
         df_input = self.df[self.df["datatype"] == "nedbør"]
         df_input = df_input.rename(columns={"value": "plot_value"})
         interp = interpolate_data(df_input, cutoff_km=100)
-        self.assertFalse(interp.empty)
-        self.assertIn("plot_value", interp.columns)
+        self.assertGreater(len(interp), 4) # Sjekk at det er flere rader enn input
+        self.assertFalse(interp.empty) 
+        self.assertIn("plot_value", interp.columns) 
 
     def test_interpolate_data_too_few_points(self):
+        # Test at interpolate_data returnerer en tom DataFrame når det er for få punkter
         df_few = self.df.iloc[:2].copy()
         df_few["plot_value"] = df_few["value"]
         result = interpolate_data(df_few, 100)
@@ -62,6 +64,7 @@ class TestWeatherMappingFunctions(unittest.TestCase):
         self.assertIsInstance(deck, pdk.Deck)
 
     def test_plot_legend_returns_bytesio(self):
+        # Test at plot_legend returnerer en BytesIO-objekt
         result = plot_legend(0, 100, datatype="nedbør")
         self.assertIsInstance(result, BytesIO)
         self.assertGreater(result.getbuffer().nbytes, 0)
