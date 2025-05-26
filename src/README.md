@@ -23,7 +23,12 @@ Metoder for rensing, transformasjon og klargjøring av værdata. Denne skal bruk
 Beregner månedlige gjennomsnitt, temperaturavvik og progresjon mot klimamål.
 
 ### `predictions.py`
+predictions.py
 Trener og evaluerer prediksjonsmodeller for fremtidige værdata.
+
+I resample_and_engineer_features brukes sin og cos-funksjoner for å representere årstidsvariasjoner (måneder eller uker) som sykliske variabler. Dette betyr at januar og desember behandles som nærliggende tidspunkter, i motsetning til vanlige numeriske verdier hvor januar (1) og desember (12) har stor avstand. Denne transformasjonen gjør det mulig for modellen å fange opp sesongmønstre som gjentar seg årlig.
+
+I train_and_evaluate_model deles datasettet slik at de første 80 % av observasjonene brukes til trening, og de siste 20 % brukes til å evaluere modellens ytelse. Før treningen standardiseres input-variablene ved hjelp av StandardScaler for å hindre at funksjoner med store verdier, som time_numeric, dominerer regresjonen. Verdiene transformeres etter formelen: z = (x-u)/s. Der u er gjennomsnitt og s er standardavvik. 
 
 ### `heatmap_utils.py`
 Verktøy for å lage og visualisere interpolerte heatmaps av værdata.
@@ -47,6 +52,7 @@ Streamlit-app for å vise interpolerte heatmaps av værdata.
 
 ### `streamlit_correlation.py`
 Streamlit-app for å sammenligne og analysere korrelasjon mellom to datasett.
+Her brukes også standardisering i plottet hvor de to grafene sammenlignes, dette er slik at grafer som pressure og humidity har veldig ulike verdier og må standardiseres for å vise noen visuell sammenheng. 
 
 ---
 

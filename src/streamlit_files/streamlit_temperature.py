@@ -24,7 +24,7 @@ def show():
             - **År:** {progress['latest_year']}
             - **Temperaturavvik dette året:** {progress['latest_anomaly']:.2f} °C  
             - **Avvik fra mål:** {progress['overshoot']:.2f} °C  
-            - **På rett spor:** {'✅ Ja' if progress['on_track'] else '❌ Nei'}  
+            - **På rett spor:** {'Ja' if progress['on_track'] else 'Nei'}  
             - **Nødvendig reduksjon per år:** {reduction_per_year:.2f} °C
             """)
             if 'referenceTimestamp' in df.columns and 'anomaly' in df.columns:

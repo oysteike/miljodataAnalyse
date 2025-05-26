@@ -89,7 +89,7 @@ def create_forecast(model, start_time, last_time, freq, periods, period_len, sca
     Starter umiddelbart etter siste historiske punkt.
     """
     try:
-        # Start på neste gyldige tidspunkt etter last_time gitt frekvens
+        # Sin og cos brukes for å fange opp sesongvariasjoner
         future_dates = pd.date_range(start=last_time + pd.tseries.frequencies.to_offset(freq), periods=periods, freq=freq)
         time_numeric = (future_dates - start_time).total_seconds()
         season = future_dates.month if freq == 'MS' else future_dates.isocalendar().week
@@ -97,6 +97,7 @@ def create_forecast(model, start_time, last_time, freq, periods, period_len, sca
         season_cos = np.cos(2 * np.pi * season / period_len)
 
         X_future = np.column_stack([time_numeric, season_sin, season_cos])
+        # Skalerer data slik at verdiene for time_numeric, season_sin og season_cos er i samme skala som treningsdataene
         X_future_scaled = scaler.transform(X_future)
 
         predicted_values = model.predict(X_future_scaled)
