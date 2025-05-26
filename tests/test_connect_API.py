@@ -1,9 +1,12 @@
 import unittest
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src', 'API')))
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src/API')))
 
-from weather_oslo_met import FrostDataFetcher
+from weather_oslo_met import FrostDataFetcher  # If src/API/weather_oslo_met.py exists and is in sys.path
+
+# If the above import still fails, try:
+# from src.API.weather_oslo_met import FrostDataFetcher
 
 class TestFrostDataFetcher(unittest.TestCase):
     def setUp(self):
