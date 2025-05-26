@@ -55,10 +55,8 @@ def show():
     legend = plot_legend(min_val, max_value, datatype)
     st.image(legend)
 
-    with st.expander("📊 Rådata og statistikk"):
+    with st.expander("Rådata og statistikk"):
         st.write("Antall opprinnelige punkter:", len(filtered_df))
         st.dataframe(filtered_df[["lat", "lon", "value"]].head())
         st.write(filtered_df["value"].describe())
         st.write("Antall interpolerte punkter:", len(interp_df))
-
-
