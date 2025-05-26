@@ -18,7 +18,7 @@ Tester funksjoner for databehandling som rensing, resampling og fylling av mangl
 1. Installer nødvendige avhengigheter (`pandas`, `numpy`, `scikit-learn`, osv.).
 2. Kjør testene med:
    ```bash
-   python -m unittest discover -s tests -p "*.py"
+   pytest
    ```
    
 
