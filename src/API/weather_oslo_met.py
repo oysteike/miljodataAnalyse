@@ -7,13 +7,11 @@ modul_path = os.path.join(os.getcwd(), "src")
 sys.path.append(modul_path)
 from processing.transform_data import process_weather_data
 
-
 """
 Denne klassen henter værdata fra frost.met.no og lagrer som csv
 Vi laget en klasse for å gjøre det enklere å teste og justere koden for gjenbruk
-init for alle nødvendige parametere
 fetch_data for å hente data fra frost.met.no, ved bruk av requests
-process_data for å tilpasse dataene til et bedre format
+process_data for å renske og tilpasse dataen
 save_to_csv for å lagre dataene som csv med pandas DataFrame
 run for å kjøre hele prosessen
 """
@@ -35,6 +33,7 @@ class FrostDataFetcher:
         self.output_filename = output_filename # Filnavn for å lagre data som csv
         self.stationsdata_path = stationsdata_path # Sti til stationsdata.csv, hvis nødvendig
     
+
     def fetch_data(self):
         response = requests.get(self.endpoint, self.parameters, auth=(self.client_id, '')) # Henter data fra frost.met.no
         
@@ -49,23 +48,20 @@ class FrostDataFetcher:
             print(f'Årsak: {response.json()["error"]["reason"]}')
             return None
     
+
     def process_data(self, data):
         """
         Tilpasser dataene til et bedre format
         """
         try:
             df = pd.json_normalize(data)
-            #print(df.iloc[1, 2])
-            #print(df.head())
-            #print(f"Data inneholder {len(df)} rader og {len(df.columns)} kolonner.")
-            #print(f"Datatyper:\n{df.dtypes}")
-            #print(f"Manglende verdier:\n{df.isnull().sum()}")
         except Exception as e:
             print(f"Feil ved konvertering av data til DataFrame: {e}")
             return None
         df = process_weather_data(df, self.stationsdata_path) # Kall funksjonen for å behandle dataene
         return df
     
+
     def save_to_csv(self, df):
         try:
 
@@ -75,6 +71,7 @@ class FrostDataFetcher:
 
         except Exception as e: # Hvis feil oppstår under lagring
             print(f"Feil ved lagring som CSV-fil: {e}")
+    
     
     def run(self): # Egen metode for å kjøre hele prosessen
         data = self.fetch_data()
@@ -89,10 +86,16 @@ class FrostDataFetcher:
 
 
 if __name__ == "__main__":
-    client_id = "5b9e3b06-3d3d-4049-9b86-b52c0e8cfb81"
+    from dotenv import load_dotenv # Her forventes at du har en .env-fil med FROST_CLIENT_ID
+    load_dotenv()
+
+    client_id = os.getenv("FROST_CLIENT_ID")
     ref_time = "2015-01-01/2025-01-01"
     source_id = "SN90450"
-
+    """
+    Slik har vi hentet data fra frost.met.no. 
+    Se "https://frost.met.no/elementtable" for andre elementer.
+    """
     
     fetch1 = FrostDataFetcher(client_id, source_id, 'sum(precipitation_amount P1D)',  '2015-01-01/2025-01-01', "oslo_2015-2025/Precipitation.csv")
     fetch2 = FrostDataFetcher(client_id, source_id, 'sum(duration_of_sunshine P1D)', '2015-01-01/2025-01-01', "oslo_2015-2025/Sunshine.csv")
@@ -107,7 +110,6 @@ if __name__ == "__main__":
     fetch5.run()
     fetch6.run()    
 
-    """
     for station_name in ['Agder', 'Innlandet', 'Oslo', 'Viken', 'Vestfold og Telemark', 'Møre og Romsdal', 'Nordland', 'Vestland', 'Trøndelag', 'Troms og Finnmark', 'Rogaland']:
         
         # Hent alle lokasjoner i regionen
@@ -140,4 +142,4 @@ if __name__ == "__main__":
                     stationsdata_path=stationsdata_path # Sti til stationsdata.csv
                 )
                 fetch.run()
-    """
+  

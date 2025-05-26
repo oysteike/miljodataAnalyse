@@ -5,6 +5,7 @@ import numpy as np
 from scipy.interpolate import griddata
 from scipy.spatial import cKDTree
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 import matplotlib as mpl
 from io import BytesIO
 import pydeck as pdk
@@ -47,6 +48,7 @@ def load_data(data_dir):
 
     return pd.concat(dfs, ignore_index=True)
 
+
 def filter_data(df, datatype, selected_date, max_value):
     """
     Filtrerer data etter ønsket datatype og dato.
@@ -54,6 +56,7 @@ def filter_data(df, datatype, selected_date, max_value):
     df2 = df[(df['datatype'] == datatype) &(df['referenceTimestamp'] == selected_date)].copy()
     df2['plot_value'] = df2[VALUE]
     return df2
+
 
 def interpolate_data(df, cutoff_km):
     """
@@ -91,15 +94,13 @@ def interpolate_data(df, cutoff_km):
             print(f"Interpolasjon feilet med 'cubic': {e}")
             return pd.DataFrame()  
 
-
     # Avstand fra hvert gridpunkt til nærmeste datapunkt
     tree = cKDTree(points)
     dist, _ = tree.query(grid_points, k=1)
 
-    # Sett verdier utenfor cutoff til NaN
     grid_z_flat = grid_z.flatten()
     dist_km = dist * 111
-    grid_z_flat[dist_km > cutoff_km] = np.nan
+    grid_z_flat[dist_km > cutoff_km] = np.nan  # Sett verdier utenfor cutoff til NaN
 
 
     # Returner som DataFrame
@@ -108,8 +109,8 @@ def interpolate_data(df, cutoff_km):
         LAT: grid_points[:, 1],
         'plot_value': grid_z_flat
     }).dropna()
-
     return interp_df
+
 
 def make_map(df, radius, intensity, threshold):
     """
@@ -141,24 +142,20 @@ def make_map(df, radius, intensity, threshold):
         map_style=MAP_STYLE
     )
 
+
 def plot_legend(min_val, max_val, datatype="nedbør"):
     """
     Lager en fargeskala/legende for nedbør- eller vindverdier.
     Returnerer som bilde i minnet (BytesIO).
-    """
-    from matplotlib.colors import LinearSegmentedColormap
-
-    if datatype.lower() == "vind":
-        colors = ["white", "lightblue", "blue", "navy"]  # Vind: blåskala
-        label = "Vind (m/s)"
-    else:
-        colors = ["white", "yellow", "red"]  # Nedbør: gul-rød"
+    """    
+    colors = ["white", "yellow", "red"]
 
     cmap = LinearSegmentedColormap.from_list("custom_heat", colors)
 
     fig, ax = plt.subplots(figsize=(6, 0.5))
     fig.subplots_adjust(bottom=0.5)
 
+    # Normaliserer verdier mellom min og maks for riktig skalering av farger
     norm = mpl.colors.Normalize(vmin=min_val, vmax=max_val)
     cb = mpl.colorbar.ColorbarBase(
         ax, cmap=cmap,
@@ -166,8 +163,9 @@ def plot_legend(min_val, max_val, datatype="nedbør"):
         orientation='horizontal'
     )
 
+    # Lagre figuren som bilde i minnet (i stedet for til disk)
     buf = BytesIO()
     plt.savefig(buf, format="png", dpi=150, bbox_inches='tight', transparent=True)
     buf.seek(0)
-    plt.close(fig)
+    plt.close(fig) # Lukker figuren for å slippe å holde på minne
     return buf

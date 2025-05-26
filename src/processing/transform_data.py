@@ -1,14 +1,18 @@
 import pandas as pd
 import numpy as np
 from scipy.stats import zscore
-from sklearn.linear_model import LinearRegression
 from datetime import timedelta
 import isodate
 import os
 
 """
-Denne metoden renser og prosesserer værdata fra frost.met.no.
-Dette er for å forbrede dataene for lagring i csv og videre analyse.
+Modul for rensing og prosessering av værdata fra frost.met.no.
+
+Dette inkluderer:
+- Håndtering av timestamp-offsets
+- Fjerning av outliers
+- Interpolering av manglende verdier
+- Agregering og evt. påkobling av stasjonsmetadata
 """
 
 def clean_columns(df):
@@ -42,7 +46,8 @@ def preprocess_dataframe(df):
 
 def remove_outliers(df):
     """
-    Fjerner outliers med Z-score og returnerer både renset og fjernet data. Fungerer med fler datatyper, selv om vi kun bruker en.
+    Fjerner uteliggere basert på Z-score (per datatype).
+    Returnerer renset DataFrame og en med uteliggere.
     """
     def identify_outliers(group):
         z_scores = zscore(group.dropna())
@@ -84,7 +89,6 @@ def fill_missing_values(df):
     og markerer hvilke verdier som er interpolert.
     """
     df["is_interpolated"] = False
-
     result = []
 
     for datatype in df['datatype'].unique():
@@ -92,17 +96,13 @@ def fill_missing_values(df):
         if subset.empty:
             continue
 
-        # Sorter og sett index til timestamp
         subset = subset.sort_values('referenceTimestamp')
         subset.set_index('referenceTimestamp', inplace=True)
 
-        # Husk hvilke som var NaN
         was_nan = subset['value'].isna()
 
-        # Interpoler basert på tid
         subset['value'] = subset['value'].interpolate(method='time', limit_direction='both')
 
-        # Merk de som ble interpolert
         subset['is_interpolated'] = was_nan & subset['value'].notna()
 
         subset.reset_index(inplace=True)
@@ -112,7 +112,7 @@ def fill_missing_values(df):
 
 def add_station_metadata(df, stationsdata_path):
     """
-    Legger til stasjonsnavn og koordinater hvis metadata er tilgjengelig.
+    Legger til stasjonsnavn og koordinater basert på metadata-fil.
     """
     try:
         metadata = pd.read_csv(stationsdata_path, dtype={'source_id': str})

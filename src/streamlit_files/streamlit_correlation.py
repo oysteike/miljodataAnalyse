@@ -21,16 +21,16 @@ def show():
     selected_file1 = st.selectbox("Velg første datakilde", sorted(data_files))
     selected_file2 = st.selectbox("Velg andre datakilde", data_files)
 
-    while selected_file1 == selected_file2:
-        st.warning("Kan ikke velge samme fil to ganger. Velg en annen fil.")
-        selected_file2 = st.selectbox("Velg andre datakilde (CSV)", sorted(data_files))
+    if selected_file1 == selected_file2:
+        st.warning("Kan ikke velge samme fil to ganger. Velg to ulike filer.")
+        return
 
     file_path1 = os.path.join(data_dir, selected_file1)
     file_path2 = os.path.join(data_dir, selected_file2)
 
     df = load_data(file_path1, file_path2)
     if df.empty:
-        st.warning("Ingen data ble hentet. Sjekk format og felles datoer i filene.")
+        st.error("Ingen data ble hentet. Sjekk at filene overlapper og har riktig format.")
         return
 
     st.write(f"Antall datapunkter totalt: {len(df)}")
@@ -46,10 +46,11 @@ def show():
     # Behold kopi av originalene
     df_original = df_filtered.copy()
 
-    # Standardiserte verdier for plotting
-    df_filtered['value_1'] = (df_filtered['value_1'] - df_filtered['value_1'].mean()) / df_filtered['value_1'].std()
-    df_filtered['value_2'] = (df_filtered['value_2'] - df_filtered['value_2'].mean()) / df_filtered['value_2'].std()
-
+    # Standardiser verdier
+    def standardize(series):
+        return (series - series.mean()) / series.std()
+    df_filtered['value_1'] = standardize(df_filtered['value_1'])
+    df_filtered['value_2'] = standardize(df_filtered['value_2'])
 
     # Korrelasjon (beregnes på originalene)
     corr = calculate_correlation(df_original)

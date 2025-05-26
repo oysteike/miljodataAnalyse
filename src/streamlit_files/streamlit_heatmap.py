@@ -9,11 +9,12 @@ def show():
     st.markdown("""
     **Visualiserer interpolerte værdata for nedbør i januar 2025.**
     Med data fra hele Norge lages et interaktivt heatmap.
-    Velg værtype og dato for å se dataene i kartet.  
-    Noen av områdene vil være hvite på grunn av manglende data – denne oversikten er altså mindre fullstendig.
 
-     *Vær oppmerksom på at interpolering ikke gir nøyaktige resultater.*
-    """)  
+    Velg værtype og dato for å se dataene i kartet.  
+    Noen områder vil være hvite på grunn av manglende data – denne oversikten er altså mindre fullstendig.
+
+    *Vær oppmerksom på at interpolering ikke gir nøyaktige resultater.*
+    """)
     current_dir = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(current_dir, '..', '..', 'data', 'Jan_2025')
 
@@ -27,16 +28,14 @@ def show():
 
     max_value = df[df['datatype'] == datatype]["value"].max()
     dates = sorted(df['referenceTimestamp'].unique())
-    selected_index = st.number_input("Velg dag", min_value=0, max_value=len(dates)-1, value=0, step=1)
-    selected_date = dates[selected_index]
+    selected_date = st.selectbox("Velg dato", dates, index=0)
     st.write(f"Valgt dato: {selected_date}")
 
     radius = 80
     intensity = 0.7
     threshold = 0.05
-    cutoff = 75
-    if datatype == "temperatur":
-        cutoff = 750
+    default_cutoff = 750 if datatype == "temperatur" else 75
+    cutoff = st.slider("Cutoff for interpolering", min_value=10, max_value=1000, value=default_cutoff)
 
     filtered_df = filter_data(df, datatype, selected_date, max_value)
 

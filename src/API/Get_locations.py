@@ -22,8 +22,8 @@ def fetch_all_stations(client_id, save=False, csv_filename="buskerud_stasjoner.c
 
     response = requests.get(url, params=params, auth=(client_id, ""))
     
-    if response.status_code != 200:
-        print(f"⚠️  Feil ved henting av stasjoner: {response.status_code}")
+    if response.status_code != 200: # Sjekker om forespørselen var vellykket
+        print(f"Feil ved henting av stasjoner: {response.status_code}")
         print(response.text)
         return {}
 
@@ -31,14 +31,14 @@ def fetch_all_stations(client_id, save=False, csv_filename="buskerud_stasjoner.c
     rows = []
     station_dict = {}
 
-    for entry in data:
+    for entry in data: # Itererer gjennom hver stasjon
         name = entry.get("name")
         source_id = entry.get("id")
         coords = entry.get("geometry", {}).get("coordinates")
         
-        if name and source_id and coords and len(coords) == 2:
+        if name and source_id and coords and len(coords) == 2: # Sjekker at alle nødvendige data er tilstede
             lon, lat = coords
-            station_dict[name] = [source_id, coords]
+            station_dict[name] = [source_id, coords] # Lettere format
             rows.append({
                 "station_name": name,
                 "source_id": source_id,
@@ -56,6 +56,8 @@ def fetch_all_stations(client_id, save=False, csv_filename="buskerud_stasjoner.c
     return station_dict
 
 if __name__ == "__main__":
+    
+    # Med fylkenes koordinater hentes værstasjoner for hvert fylke.
     counties = {
   "Viken": {
     "type": "Polygon",

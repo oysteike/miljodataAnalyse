@@ -2,6 +2,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
+
 def load_data(file_path1, file_path2):
     """
     Leser inn to CSV-filer og sammenligner dem basert på kolonnene 'referenceTimestamp' og 'value'.
@@ -24,6 +25,7 @@ def load_data(file_path1, file_path2):
 
     except Exception:
         return pd.DataFrame()
+
 
 def plot_weather_dashboard(df):
     """

@@ -5,9 +5,9 @@ from io import BytesIO
 import pydeck as pdk
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src', 'processing')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src')))
 
-from heatmap_utils import (
+from processing.heatmap_utils import (
     load_data, filter_data, interpolate_data,
     make_map, plot_legend,
 )
