@@ -122,6 +122,3 @@ def analyze_temperature_progress(temperature_dir):
     reduction_per_year = required_reduction(annual_anomaly)
 
     return monthly_anomalies, progress, reduction_per_year
-
-
-

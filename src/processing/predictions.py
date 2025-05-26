@@ -109,7 +109,6 @@ def create_forecast(model, start_time, last_time, freq, periods, period_len, sca
         raise RuntimeError(f"Feil ved prediksjon av fremtidige verdier: {e}")
 
 
-
 def predict_from_csv(filename, freq, periods):
     """
     Kjørefunksjon som kobler sammen alle stegene:
