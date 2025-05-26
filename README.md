@@ -1,5 +1,5 @@
 # Miljodataanalyse-1
-Denne aplikasjonen henter inn data fra frost.met.no og visualiserer dem i et kart samt bruker dataene til å predikere oppførsle frem i tid. 
+Denne aplikasjonen henter inn data fra frost.met.no sitt API. Datasettet brukes til å regne sammenhenger og prediksjon som korrelasjon. I tillegg visualiseres dem i et kart og en rekke grafer. Heatmap, scatterplot og linjediagram. 
 
 ## Struktur
 Kort forklaring av mapper og filer:
