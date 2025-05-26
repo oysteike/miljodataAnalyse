@@ -4,7 +4,6 @@ import numpy as np
 import sys
 import os
 
-# Legg til src i sys.path for import
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 from processing import temperature_calculations as tc
 

@@ -1,18 +1,19 @@
-import os
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src')))
-from processing.transform_data import clean_columns, preprocess_dataframe, remove_outliers, resample_and_aggregate, fill_missing_values, add_station_metadata
-
 import unittest
-from io import StringIO
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
-from scipy.stats import zscore
-from sklearn.linear_model import LinearRegression
-from datetime import timedelta
-import isodate
+from datetime import datetime
+import os
+import sys
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src')))
+from processing.transform_data import (
+    clean_columns,
+    preprocess_dataframe,
+    remove_outliers,
+    resample_and_aggregate,
+    fill_missing_values,
+    add_station_metadata
+)
 
 class TestWeatherDataProcessor(unittest.TestCase):
 

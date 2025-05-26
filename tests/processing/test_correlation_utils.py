@@ -1,5 +1,9 @@
 import unittest
 import pandas as pd
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), 'src')))
+
 from processing.correlation_utils import load_data, calculate_correlation
 
 class TestCorrelationUtils(unittest.TestCase):
