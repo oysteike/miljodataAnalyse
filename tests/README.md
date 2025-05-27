@@ -2,17 +2,6 @@
 
 Denne mappen inneholder tester for prosjektet `miljodataAnalyse`, skrevet med `unittest`.
 
-## Testfiler
-
-### `test_connect_API.py`
-Tester `FrostDataFetcher`-klassen for å hente og lagre værdata fra Frost API.
-
-### `test_predictions.py`
-Tester prediksjonsmodulen for å lese data, resample, trene modeller og lage prediksjoner.
-
-### `test_data_processing.py`
-Tester funksjoner for databehandling som rensing, resampling og fylling av manglende verdier.
-
 ## Kjøre tester
 
 1. Installer nødvendige avhengigheter (`pandas`, `numpy`, `scikit-learn`, osv.).
@@ -22,4 +11,4 @@ Tester funksjoner for databehandling som rensing, resampling og fylling av mangl
    ```
    
 
-Legg til nye tester ved å opprette en fil i `tests/` og følge eksisterende struktur.
+Legg til nye tester ved å opprette en fil i `tests/` og ved navn `test_...py/`, og følg eksisterende struktur.
